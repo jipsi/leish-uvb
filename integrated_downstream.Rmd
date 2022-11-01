@@ -1,0 +1,564 @@
+ ---
+title: "MM21.08"
+author: "Shoumit Dey"
+date: "28/09/2021"
+output: html_document
+---
+1. Load packages
+2. Set paths
+```{r setup}
+#Load packages
+library(Seurat)
+library(SeuratObject)
+library(cowplot)
+library(dplyr)
+library(ggplot2)
+library(AUCell)
+library(stringr)
+library(sqldf)
+library(GSEABase)
+library(ggpubr)
+library(reshape2)
+
+#save all files and folder within your working directory or working directory/your_custom_folder_name/
+#update output_integrated if you have a your_custom_folder_name within working directory 
+output_integrated <- paste0(getwd(),"/")
+
+#set pca dimensions to use and 
+#resolution for cluster identification
+#do not change if already integrated
+#or change only if multiple rds exist
+dims=15
+res=0.4
+
+```
+
+Load data and create Seurat Objects - all groups and all samples
+
+```{r start_here_if_already_integrated}
+
+input_string <- paste0(output_integrated, "integrated_mm2108_","dims",dims,"_res",res,".rds")
+print(paste0("Reading file:", input_string))
+seuratObj<-readRDS(input_string)
+rm(input_string)
+
+table(seuratObj@meta.data$D_UVB)
+table(seuratObj@meta.data$orig.ident)
+
+levels(seuratObj$CellTypeM) <- c("FIV","FV", "FIII","FI", "Mac","T_NK","FVI","EndoI","FII","Basal","tDP","RBCs","LEC_LV","Myofibroblasts","Schwann","Sebocytes")
+
+#integrated_sctransformed <- SetIdent(integrated_sctransformed, value = "seurat_clusters")
+####################################################
+####################################################
+# basal <- SetIdent(basal, value = "seurat_clusters")
+# basal_cluster_9 <- subset(basal, idents = 9)
+# basal_cluster_9_cells <- data.frame(WhichCells(basal_cluster_9))
+# colnames(basal_cluster_9_cells) <- "Tcells"
+# write.csv(basal_cluster_9_cells, paste0(output_integrated, "t_cell_barcodes.csv"))
+######################Barcodes falsely identified upon clustering as basal cells###################################
+######################rename these as T_NK cells before downstream analysis########################################
+basal_cluster_9_cells <- read.csv(paste0(output_integrated, "t_cell_barcodes.csv"))
+basal_cluster_9_cells$X <- NULL
+# ACACAGTGTGAGACCA-1_1	CTGCCATGTATCTCGA-1_1	GCAACCGAGCAAATCA-1_1	TCGCTCACACAGCATT-1_1	ACTGTGACACCAAATC-1_4	AGAAATGCAGTCGTTA-1_4	AGGGCCTCAACAGTGG-1_4	AGTCATGTCTCTATGT-1_4	ATCTCTATCGTCGGGT-1_4	CACGTGGGTGTGTACT-1_4	CATGGATAGAACTTCC-1_4	CATTCTAAGCTGTTAC-1_4	CCTAACCAGTGGTTGG-1_4	CGAGAAGAGAGATCGC-1_4	CGGCAGTCACCGTGCA-1_4	CTAAGTGGTTGACTAC-1_4	CTCCATGGTATAGCTC-1_4	CTCCTTTGTGTAGGAC-1_4	CTTCAATCATATGAAG-1_4	GACCCAGTCCGCAAAT-1_4	GCATCGGAGACTACCT-1_4	GCCAACGGTTCACCGG-1_4	GGGAGTACACGCGCTA-1_4	GGTTAACTCGAAGCAG-1_4	GTAACACTCAACTCTT-1_4	GTCATTTGTCGCAACC-1_4	GTTCATTGTCGATTAC-1_4	TCAAGACGTGGGTCAA-1_4	TGAGACTAGAGCCGAT-1_4	TGAGGTTGTTTGGGTT-1_4	TGCGATAGTCCCGGTA-1_4	TGCGGGTGTACTCCCT-1_4	TGTGCGGCACAGCCAC-1_4	TTGAACGCAGCCCACA-1_4	TTGAGTGTCTGTGCTC-1_4
+#View(basal_cluster_9)
+main_meta <- seuratObj@meta.data
+main_meta$CellTypeM[rownames(main_meta) %in% basal_cluster_9_cells$Tcells] <- "T_NK"
+main_meta$integrated_snn_res.0.4[rownames(main_meta) %in% basal_cluster_9_cells$Tcells] <- "5"
+main_meta$seurat_clusters[rownames(main_meta) %in% basal_cluster_9_cells$Tcells] <- "5"
+#main_meta$row_names_all <- rownames(main_meta)
+#change meta for cluster 9 basals
+seuratObj@meta.data <- main_meta
+seuratObj <- SetIdent(seuratObj, value = "seurat_clusters")
+DimPlot(seuratObj)
+seuratObj <- SetIdent(seuratObj, value = "CellTypeM")
+DimPlot(seuratObj)
+####################################################
+####################################################
+
+```
+
+
+```{r plots}
+
+
+seuratObj <- SetIdent(seuratObj, value="CellTypeM")
+celltypes <- c("Mac", "T_NK", "FI","FII", "FIII", "FIV","FV", "FVI","Basal", "EndoI", "Myofibroblasts","tDP","LEC_LV","Sebocytes","Schwann","RBCs")
+Idents(seuratObj) <- factor(x = Idents(seuratObj), levels = celltypes)
+
+cell_colours <- c("#CD9600","#E68613","#00BE67","#00C19A","#00BFC4","#00B8E7","#00A9FF","#8494FF","#ABA300","#7CAE00","#0CB702","#C77CFF","#ED68ED","#FF61CC","#FF68A1","#F8766D")
+        
+DimPlot(seuratObj, reduction="pca", label = TRUE, label.box = TRUE, cols = cell_colours)+NoLegend()
+DimPlot(seuratObj, label = TRUE, label.box = TRUE, cols = cell_colours)+NoLegend()
+DimPlot(seuratObj, reduction="tsne", label = TRUE, label.box = TRUE, cols = cell_colours)+NoLegend()
+
+########################################################################################
+###########################FIGURE 3A#####################################################
+#########################################################################################
+pdf(paste0(output_integrated, "/low_dim_visual/","figure3A_integrated_mm2108_","dims",dims,"_res",res,".pdf"), width = 11, height = 6)
+  x<-DimPlot(seuratObj, reduction="pca", label = TRUE, label.box = TRUE, cols = cell_colours)+NoLegend()
+  y<-DimPlot(seuratObj, label = TRUE, label.box = TRUE, cols = cell_colours)+NoLegend()
+  #z<-DimPlot(seuratObj, label = TRUE, label.box = TRUE, group.by = "seurat_clusters", cols = cell_colours)+NoLegend()+ggtitle(label = "")
+  y + x
+dev.off()
+
+#Re-write proportions
+#Output proportion per cell type, dividing by the sum of the column (margin=2)
+prop.table(table(Idents(seuratObj), seuratObj$orig.ident), margin = 2)
+#write proportion per cell type
+write.csv(prop.table(table(Idents(seuratObj), seuratObj$orig.ident), margin = 2), paste0(output_integrated, "/phenotyping/", "_ident_proportions_sample.csv"), row.names =TRUE)
+
+```
+PLEASE NOTE:
+###the following lines of code achieves two objectives
+####1. Sub-clusters and saves RDS for each of the imputed cell types
+####2. Subsets each celltype into comparison groups and calculates DE genes for four comparisons as described below
+###fig4a: Refers to -UVB; L.donovani Vs -UVB which forms roughly half of FIGURE 4 and S6 in the manuscript
+###fig4b: Refers to +UVB Vs -UVB which forms roughly half of FIGURE 4 and S6 in the manuscript
+###fig5a: Refers to +UVB; L.donovani Vs +UVB versus uninfected +UVB" which forms roughly half of FIGURE 5 and S7 in the manuscript
+###fig5b: Refers to +UVB; L.donovani Vs -UVB; L.donovani which forms roughly half of FIGURE 5 and S7 in the manuscript
+```{r sub-cluster + sub-set to compare}
+###the following lines of code achieves two objectives
+####1. Sub-clusters and saves RDS for each of the imputed cell types
+####2. Subsets each celltype into comparison groups and calculates DE genes for 
+####four comparisons 
+###fig4a: Refers to "L. donovani infected versus uninfected -UVB" which forms roughly half of FIGURE 4 in the manuscript
+###fig4b: Refers to "uninfected +UVB uninfected -UVB" which forms roughly half of FIGURE 4 in the manuscript
+###fig5a: Refers to "L. donovani infected +UVB versus uninfected +UVB" which forms roughly half of FIGURE 5 in the manuscript
+###fig5b: Refers to "L. donovani +UVB versus L. donovani -UVB" which forms roughly half of FIGURE 5 in the manuscript
+subclust_res <- 0.3
+subclust_dims <- 15
+
+figures<-c("fig4a","fig4b","fig5a","fig5b")
+
+comparisons<-List()
+comparisons[["fig4a"]]<-"Untd/INF_Untd/d0"
+comparisons[["fig4b"]]<-"UVB/d0_Untd/d0"
+comparisons[["fig5a"]]<-"UVB/INF_UVB/d0"
+comparisons[["fig5b"]]<-"UVB/INF_Untd/INF"
+
+#create folders
+dir.create(paste0(output_integrated, "/group_comparisons/", "fig4a"))
+dir.create(paste0(output_integrated, "/group_comparisons/", "fig4b"))
+dir.create(paste0(output_integrated, "/group_comparisons/", "fig5a"))
+dir.create(paste0(output_integrated, "/group_comparisons/", "fig5b"))
+
+for(celltype in unique(unlist(seuratObj$CellTypeM))){
+  #unlink("mydir", recursive=TRUE)
+  dir.create(paste0(output_integrated, "/group_comparisons/", celltype))
+  #Re-set Ident each time as finding clusters will reset idents
+  seuratObj <- SetIdent(seuratObj, value = seuratObj$CellTypeM)
+  seuratSubObj <- subset(seuratObj, idents=celltype)
+  seuratSubObj
+  DefaultAssay(seuratSubObj) <- "SCT"
+  
+  seuratSubObj <- FindVariableFeatures(seuratSubObj, assay = "RNA")
+  var.features <- VariableFeatures(seuratSubObj, assay = "RNA")
+  VariableFeatures(seuratSubObj) <- var.features
+  
+  seuratSubObj <- RunPCA(seuratSubObj, verbose = FALSE)
+  seuratSubObj <- FindNeighbors(seuratSubObj, reduction = "pca", dims = 1:subclust_dims)
+  seuratSubObj <- FindClusters(seuratSubObj, verbose = FALSE, resolution=subclust_res)
+  seuratSubObj <- RunUMAP(seuratSubObj, reduction = "pca", dims = 1:subclust_dims)
+  seuratSubObj <- RunTSNE(seuratSubObj, reduction = "pca", dims = 1:subclust_dims)
+  #Output proportion per cluster, dividing by the sum of the column (margin=2)
+  #proportion_by_group<-prop.table(table(Idents(seuratSubObj), seuratSubObj$D_UVB), margin = 2)
+  proportion_by_sample<-prop.table(table(Idents(seuratSubObj), seuratSubObj$orig.ident), margin = 2)
+  #write proportion per cluster grouped by treatment
+  save_path_cell_spec <- paste0(output_integrated, "/group_comparisons/", celltype, "/")
+  write.csv(proportion_by_sample, paste0(save_path_cell_spec, celltype, "_ident_group_proportions_sample.csv"), row.names =TRUE)
+
+  print(DimPlot(seuratSubObj, label = TRUE, label.box = TRUE)+NoLegend())
+  print(DimPlot(seuratSubObj, group.by = "D_UVB", label = TRUE, label.box = TRUE)+NoLegend())
+  #save plots
+  pdf(paste0(save_path_cell_spec, celltype, "_","dims",dims,"_res",subclust_res,".pdf"))
+    # print(DimPlot(seuratSubObj, reduction="pca", label = TRUE, label.box = TRUE)+NoLegend())
+    # print(DimPlot(seuratSubObj, reduction="pca", group.by = "D_UVB"))
+    print(DimPlot(seuratSubObj, label = TRUE, label.box = TRUE)+NoLegend())
+    print(DimPlot(seuratSubObj, group.by = "D_UVB"))
+
+    #heatmap(proportion_by_group, Colv = NA, Rowv = NA, scale="column")
+    heatmap(proportion_by_sample, Colv = NA, Rowv = NA, scale="column")
+  dev.off()
+    #prepare for find markers
+    seuratSubObj <- PrepSCTFindMarkers(seuratSubObj, assay = "SCT")
+    try(current_cell <- FindAllMarkers(seuratSubObj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "SCT"))
+    #test if the above variable exists
+    if(exists("current_cell")){
+          #save
+          write.csv(current_cell, paste0(save_path_cell_spec, celltype, "_all_markers.csv"), row.names =TRUE)
+          rm(current_cell)
+    }
+  #for loop starts
+  for(figure in 1:length(figures)){
+
+    #Re-set Ident each time as finding clusters will reset idents
+    seuratSubObj <- SetIdent(seuratSubObj, value = seuratSubObj$D_UVB)
+    #check figure number
+    print(figures[[figure]])
+    #check comparison
+    print(comparisons[[figures[[figure]]]])
+    #split comparison string
+    comp_list<-str_split(comparisons[[figures[[figure]]]], "_")
+    #print current comparison
+    print(paste0(comp_list[[1]][1]," Versus ", comp_list[[1]][2]))
+    #subset current object to contain only comparison groups
+    #display cells per group
+    print(table(seuratSubObj$D_UVB))
+    #store markers in current_figure
+    try(current_figure <- FindMarkers(seuratSubObj, ident.1 = comp_list[[1]][1], ident.2 = comp_list[[1]][2], min.pct = 0.25, logfc.threshold = 0.25, assay = "SCT"))
+    if(exists("current_figure")){
+          #save
+          write.csv(current_figure, paste0(output_integrated, "group_comparisons/",figures[[figure]],"/",celltype,".csv"), row.names =TRUE)
+
+          rm(current_figure)
+    }
+
+  }
+  saveRDS(seuratSubObj, paste0(save_path_cell_spec, celltype, "_postTadj.Rds"))  
+  rm(seuratSubObj)
+}
+
+```
+#################################################################################################################################
+The following code prints four comparisons calculated in the above chunk and forms the following figures in the manuscript
+FIGURE S6B: -UVB; L.donovani Vs -UVB
+FIGURE S6C: +UVB Versus -UVB
+FIGURE S7A: +UVB; L.donovani Vs +UVB
+FIGURE S7C: +UVB; L.donovani Vs -UVB; L.donovani
+#################################################################################################################################
+```{r top_genes_figure}
+cell_colours <- c("#CD9600","#E68613","#00BE67","#00C19A","#00BFC4","#00B8E7","#00A9FF","#8494FF","#ABA300","#7CAE00","#0CB702","#C77CFF","#ED68ED","#FF61CC","#FF68A1","#F8766D")
+figures<-c("fig4a","fig4b","fig5a","fig5b")
+comparisons <- c("Untd/INF Versus Untd/d0", "UVB/d0 Versus Untd/d0", "UVB/INF Versus UVB/d0", "UVB/INF Versus Untd/INF")
+figure_count <- 1
+
+for(figure in figures){
+  celltypes_top_down <- list()
+  
+  celltypes <- c("Mac", "T_NK", "FI","FII", "FIII", "FIV","FV", "FVI","Basal", "EndoI", "Myofibroblasts","tDP","LEC_LV","Sebocytes","Schwann","RBCs")
+  #colours <- c("brown4","plum3","goldenrod1","forestgreen","darkgreen","aquamarine4","darkblue","honeydew3","yellowgreen","yellow3","lightcoral","cornflowerblue","cyan4","hotpink3","khaki2","orangered")
+  counter <- 1
+  
+  for(celltype in celltypes){
+    current_sheet <- read.csv(paste0(output_integrated, "group_comparisons/",figure,"/",celltype,".csv"), header = TRUE)
+    current_sheet_top5 <- sqldf("
+                            SELECT X as gene, avg_log2FC
+                            FROM current_sheet
+                            WHERE p_val_adj < 0.05
+                            ORDER BY avg_log2FC DESC
+                            LIMIT 5
+                            ")
+    current_sheet_down5 <- sqldf("
+                            SELECT X as gene, avg_log2FC
+                            FROM current_sheet
+                            WHERE p_val_adj < 0.05
+                            ORDER BY avg_log2FC ASC
+                            LIMIT 5
+                            ")
+    
+    current_sheet_top_down <- sqldf("
+                        SELECT * FROM current_sheet_top5
+                        UNION 
+                        SELECT * FROM current_sheet_down5
+                        ORDER BY avg_log2FC DESC
+                        ")
+    
+    
+    p <- ggplot(current_sheet_top_down, aes(x = reorder(gene, +avg_log2FC), y=avg_log2FC, label="log2FoldChange")) +
+          geom_bar(stat='identity', aes(fill=avg_log2FC), width=.5, fill = cell_colours[counter]) +
+          coord_flip() +
+          theme_classic2() +
+          theme(legend.position="none") +
+          ggtitle(label = celltype) +
+          theme(axis.text = element_text(size = 9), plot.title = element_text(hjust = 0.5)) +
+          xlab(label = "") +
+          ylab(label = "Log2FC") 
+          
+    celltypes_top_down[[celltype]] <- p
+    counter <- counter + 1
+  }
+  #ggarrange(p, ncol = 3)
+  all_cell_fold_change_plots <- ggarrange(celltypes_top_down[[1]],celltypes_top_down[[2]],celltypes_top_down[[3]],
+                                celltypes_top_down[[4]],celltypes_top_down[[5]],celltypes_top_down[[6]],
+                                celltypes_top_down[[7]],celltypes_top_down[[8]],celltypes_top_down[[9]],
+                                celltypes_top_down[[10]],celltypes_top_down[[11]],celltypes_top_down[[12]],
+                                celltypes_top_down[[13]],celltypes_top_down[[14]],celltypes_top_down[[15]],
+                                celltypes_top_down[[16]],
+                                    ncol = 4, nrow = 4)
+
+  annotate_figure(all_cell_fold_change_plots, top = text_grob(comparisons[figure_count], 
+               color = "brown", face = "bold", size = 14))
+  
+  ggsave(paste0(output_integrated, "group_comparisons/",figure,"/CellTypeFold_",figure,".pdf"), width = 9, height = 11)
+  ggsave(paste0(output_integrated, "group_comparisons/",figure,"/CellTypeFold_",figure,".png"), width = 9, height = 11)
+  
+  figure_count <- figure_count + 1    
+}
+
+
+
+```
+#################################################################################################################################
+The following code reads all sub-clustered objects into a list and specifically focusses on Macs, T_NK, endothelial and 
+LEC/LV cells (No Figures but essential for running downstream analysis and figures)
+#################################################################################################################################
+```{r explore subclustered}
+sub_objects <- list()
+
+for(celltype in unique(unlist(seuratObj$CellTypeM))){
+    save_path_cell_spec <- paste0(output_integrated, "/group_comparisons/", celltype, "/")
+    sub_objects[[celltype]] <- readRDS(paste0(save_path_cell_spec, celltype, "_postTadj.Rds")) 
+  }
+
+tcells <- sub_objects[["T_NK"]]
+tcells <- SetIdent(tcells, value = "seurat_clusters")
+tcells <- RenameIdents(tcells, `0` = "0 -> Naive", `1` = "1 -> Th1-like", `2` = "2 -> NK", `3` = "3 -> gdT", `4` = "4 -> Prolif.T", `5` = "5 -> Th2-like", `6` = "6 -> Mast")
+tcells$SubCellTypeM<-Idents(tcells)
+
+endo <- sub_objects[["EndoI"]]
+
+lec <- sub_objects[["LEC_LV"]]
+
+macs <- sub_objects[["Mac"]]
+macs <- SetIdent(macs, value = "seurat_clusters")
+macs <- RenameIdents(macs, `0` = "0 -> Mo-derived Macs", `1` = "1 -> Inflam. mono", `2` = "2 -> Reg TAMs (Resident)", `3` = "3 -> DCs", `4` = "4 -> Langerhans cells", `5` = "5 -> Prolif. Myeloid", `6` = "6 -> Neutrophils", `7` = "7 -> NK-like")
+macs$SubCellTypeM<-Idents(macs)
+
+#add subcelltypem to main object
+# > write.csv(tcells@meta.data,paste0(output_integrated, "sub_clust_tcells.csv"))
+# > write.csv(macs@meta.data,paste0(output_integrated, "sub_clust_macs.csv"))
+# > write.csv(endo@meta.data,paste0(output_integrated, "sub_clust_endo.csv"))
+# > write.csv(lec@meta.data,paste0(output_integrated, "sub_clust_lec.csv")
+mac_names<-read.csv(paste0(output_integrated, "sub_clust_macs.csv"))
+t_names<-read.csv(paste0(output_integrated, "sub_clust_tcells.csv"))
+endo_names<-read.csv(paste0(output_integrated, "sub_clust_endo.csv"))
+lec_names<-read.csv(paste0(output_integrated, "sub_clust_lec.csv"))
+new_names<-rbind(mac_names, t_names, endo_names, lec_names)
+rownames(new_names)<-new_names$X
+new_names$X<-NULL
+
+
+seuratObj$SubCellTypeM<-seuratObj$CellTypeM
+seuratObj<-AddMetaData(seuratObj, metadata = new_names, col.name = "SubCellTypeM")
+seuratObj$SubCellTypeM <- ifelse(is.na(seuratObj$SubCellTypeM), as.character(seuratObj$CellTypeM), seuratObj$SubCellTypeM)
+
+DefaultAssay(seuratObj)<-"SCT"
+```
+#################################################################################################################################
+The following code saves proportions of cell types in the four comparisons in the manuscript
+-UVB; L.donovani Vs -UVB
++UVB Versus -UVB
++UVB; L.donovani Vs +UVB
++UVB; L.donovani Vs -UVB; L.donovani
+#################################################################################################################################
+```{r save proportions}
+DefaultAssay(seuratObj)<-"SCT"
+############################-UVB; L.donovani Vs -UVB################################################
+seuratfig4a <- subset(seuratObj, subset = (D_UVB == "Untd/d0" | D_UVB == "Untd/INF"))
+#calculate and save proportions
+proportion_by_sample<-prop.table(table(Idents(seuratfig4a), seuratfig4a$orig.ident), margin = 2)
+write.csv(proportion_by_sample, paste0(output_integrated, "group_comparisons/fig4a/group_proportions.csv"), row.names =TRUE)
+rm(seuratfig4a)
+############################-UVB; L.donovani Vs -UVB-End################################################
+
+############################+UVB Versus -UVB################################################
+seuratfig4b <- subset(seuratObj, subset = (D_UVB == "Untd/d0" | D_UVB == "UVB/d0"))
+seuratfig4b$D_UVB <- factor(seuratfig4b$D_UVB, levels = c("UVB/d0", "Untd/d0" ))
+#calculate and save proportions
+proportion_by_sample<-prop.table(table(Idents(seuratfig4b), seuratfig4b$orig.ident), margin = 2)
+write.csv(proportion_by_sample, paste0(output_integrated, "group_comparisons/fig4b/group_proportions.csv"), row.names =TRUE)
+rm(seuratfig4b)
+############################+UVB Versus -UVB-End################################################
+
+############################+UVB; L.donovani Vs +UVB################################################
+seuratfig5a <- subset(seuratObj, subset = (D_UVB == "UVB/d0" | D_UVB == "UVB/INF"))
+seuratfig5a$D_UVB <- factor(seuratfig5a$D_UVB, levels = c("UVB/INF", "UVB/d0"))
+
+#calculate and save proportions
+proportion_by_sample<-prop.table(table(Idents(seuratfig5a), seuratfig5a$orig.ident), margin = 2)
+write.csv(proportion_by_sample, paste0(output_integrated, "group_comparisons/fig5a/group_proportions.csv"), row.names =TRUE)
+rm(seuratfig5a)
+############################+UVB; L.donovani Vs +UVB-End################################################
+
+
+###########################+UVB; L.donovani Vs -UVB; L.donovani################################################
+seuratfig5b <- subset(seuratObj, subset = (D_UVB == "Untd/INF" | D_UVB == "UVB/INF"))
+seuratfig5b$D_UVB <- factor(seuratfig5b$D_UVB, levels = c("UVB/INF", "Untd/INF"))
+#calculate and save proportions
+proportion_by_sample<-prop.table(table(Idents(seuratfig5b), seuratfig5b$orig.ident), margin = 2)
+write.csv(proportion_by_sample, paste0(output_integrated, "group_comparisons/fig5b/group_proportions.csv"), row.names =TRUE)
+
+rm(seuratfig5b)
+############################+UVB; L.donovani Vs -UVB; L.donovani-End################################################
+```
+##############################
+FIGURES S6A, S8, 6D
+##############################
+```{r bits_for_figures}
+
+###############################Figure S6A split DimPlot##############################
+final_figure_bits <- paste0(output_integrated, "/final_figures/")
+seuratObj <- SetIdent(seuratObj, value="CellTypeM")
+celltypes <- c("Mac", "T_NK", "FI","FII", "FIII", "FIV","FV", "FVI","Basal", "EndoI", "Myofibroblasts","tDP","LEC_LV","Sebocytes","Schwann","RBCs")
+Idents(seuratObj) <- factor(x = Idents(seuratObj), levels = celltypes)
+cell_colours <- c("#CD9600","#E68613","#00BE67","#00C19A","#00BFC4","#00B8E7","#00A9FF","#8494FF","#ABA300","#7CAE00","#0CB702","#C77CFF","#ED68ED","#FF61CC","#FF68A1","#F8766D")
+
+DimPlot(seuratObj, split.by = "D_UVB", label = TRUE, cols = cell_colours) + NoLegend()
+ggsave(paste0(final_figure_bits, "fig4S_group.pdf"), width = 12, height = 5, limitsize = FALSE)
+###############################end##############################
+
+################################FIGURE S8###############################
+group_colours <- c("white", "red","grey", "blue")
+save_path_new_fig_4S2_stack <- paste0(output_integrated, "/final_figures/")
+pdpn_plot <- VlnPlot(seuratObj, features = "Pdpn", split.by = "D_UVB", group.by = "CellTypeM" , cols = group_colours) +ylab(label = "expression") + xlab(label = "") + ggtitle(label = "Pdpn across all cells and groups)")
+ggsave(paste0(save_path_new_fig_4S2_stack, "fig4S2_vln_stack.pdf"), width = 20, height = 7, limitsize = FALSE)
+################################FIGURE S8 end###############################
+
+library(patchwork)
+## remove the x-aNxis text and tick 
+## plot.margin to adjust the white space between each plot.
+## ... pass any arguments to VlnPlot in Seurat
+modify_vlnplot<- function(obj, feature, pt.size = 0, 
+                          plot.margin = unit(c(-0.75, 0, -0.75, 0), "cm"),
+                          ...) {
+  p<- VlnPlot(obj, features = feature, pt.size = pt.size, cols = group_colours, ... )  + 
+    xlab("") + ylab(feature) + ggtitle("") + 
+    theme(legend.position = "none", 
+          axis.text.x = element_blank(), 
+          axis.ticks.x = element_blank(),
+          axis.title.y = element_text(size = rel(1), angle = 0), 
+          axis.text.y = element_text(size = rel(1)), 
+          plot.margin = plot.margin ) 
+  return(p)
+}
+## extract the max value of the y axis
+extract_max<- function(p){
+  ymax<- max(ggplot_build(p)$layout$panel_scales_y[[1]]$range$range)
+  return(ceiling(ymax))
+}
+StackedVlnPlot<- function(obj, features,
+                          pt.size = 0, 
+                          plot.margin = unit(c(-0.75, 0, -0.75, 0), "cm"),
+                          ...) {
+  
+  plot_list<- purrr::map(features, function(x) modify_vlnplot(obj = obj,feature = x, ...))
+  
+  # Add back x-axis title to bottom plot. patchwork is going to support this?
+  plot_list[[length(plot_list)]]<- plot_list[[length(plot_list)]] +
+    theme(axis.text.x=element_text(angle = 45, hjust = 1, vjust = 1), 
+          axis.ticks.x = element_line())
+  
+  # change the y-axis tick to only max value 
+  ymaxs<- purrr::map_dbl(plot_list, extract_max)
+  plot_list<- purrr::map2(plot_list, ymaxs, function(x,y) x + 
+                            scale_y_continuous(breaks = c(y)) + 
+                            expand_limits(y = y))
+  
+  p<- patchwork::wrap_plots(plotlist = plot_list, ncol = 1)
+  return(p)
+}
+
+
+cell_colours <- c("#CD9600","#E68613","#00BE67","#00C19A","#00BFC4","#00B8E7","#00A9FF","#8494FF","#ABA300","#7CAE00","#0CB702","#C77CFF","#ED68ED","#FF61CC","#FF68A1","#F8766D")
+group_colours <- c("white", "red","grey", "blue")
+features_to_plot <- c("Cd34","Selp","Itgal","Itgb2","Icam1","Icam2")
+
+save_path_new_fig_6_stack <- paste0(output_integrated, "/final_figures/")
+#STACKED Violin Chart######################################################################
+######################FIGURE 6D############################################################################
+CellChat::StackedVlnPlot(obj = seuratObj, features=features_to_plot,split.by = "D_UVB", color.use = group_colours, angle = 45, pt.size = 0.0, line.size = 0.01, same.y.lims = TRUE)
+ggsave(paste0(save_path_new_fig_6_stack, "fig4b_vln_stack.pdf"), width = 15, height = 8, limitsize = FALSE)
+###########################################################################################
+###########################################################################################
+
+```
+##############################
+Figure 5C&D T_NK sub cluster
+##############################
+```{r T cells}
+save_path_T_spec <- paste0(output_integrated, "/group_comparisons/T_NK/")
+####################Figure 5D T_NK sub cluster#############################################################
+###########################################################################################################
+DimPlot(tcells, group.by = "SubCellTypeM", label = TRUE, label.size = 7) + NoLegend() + ggtitle(label = "") 
+ggsave(paste0(save_path_T_spec, "new_fig4a_t_nk_dim.pdf"), width = 8, height = 6, limitsize = FALSE)
+####################Figure 5C T_NK sub cluster#############################################################
+###########################################################################################################
+DotPlot(tcells, features = c("Odc1","Ifng","Irf8","Ctla2a","Hmgb2","Il5","Mcpt4"
+), group.by = "seurat_clusters", cols = c("grey","red")) + RotatedAxis()
+ggsave(paste0(save_path_T_spec, "fig5a_dot.pdf"), width = 8, height = 3.5, limitsize = FALSE)
+
+#figure9
+t_cd34 <- VlnPlot(tcells, features = c("Cd34"), split.by = "D_UVB", cols = group_colours) + NoLegend() +ylab(label = "expression") + xlab(label = "") + ggtitle(label = "Cd34 (T cells)")
+t_selplg <- VlnPlot(tcells, features = c("Selplg"), split.by = "D_UVB", cols = group_colours) + NoLegend() +ylab(label = "expression") + xlab(label = "") + ggtitle(label = "Selplg (T cells)")
+t_cd34 + t_selplg
+
+t_itgb2 <- VlnPlot(tcells, features = "Itgb2", split.by = "D_UVB", cols = group_colours) + NoLegend() +ylab(label = "expression") + xlab(label = "") + ggtitle(label = "Itgb2 (T cells)")
+tfeature_itgb2 <- FeaturePlot(tcells, features = c("Itgb2")) + NoLegend() + ggtitle(label = "")
+t_itgb2+tfeature_itgb2
+
+
+FeaturePlot(tcells, features = c("Ccl5","Ccr5"), blend = TRUE, blend.threshold = 0.5)
+ggsave(paste0(save_path_T_spec, "fig5a_supplement_coexp.pdf"), width = 8, height = 6, limitsize = FALSE)
+
+##################Data for Figure 5G CD4/CD8######################################
+##################################################################################
+tcells <- SetIdent(tcells, value = "seurat_clusters")
+th1_tcells <- subset(tcells, idents = "1")
+nk_tcells <- subset(tcells, idents = "2")
+cd3_pos_tcells <- subset(th1_tcells, subset = Cd3d > 0)
+cd3_pos_tcells
+DefaultAssay(cd3_pos_tcells) <- "RNA"
+cd4_pos_tcells <- subset(cd3_pos_tcells, subset = Cd4 > 0)
+cd4_pos_tcells
+cd8_pos_tcells <- subset(cd3_pos_tcells, subset = Cd8a > 0)
+cd8_pos_tcells
+##################################################################################
+```
+##############################
+Figure 5C&D Mac sub cluster
+##############################
+```{r Macs}
+
+save_path_mac_spec <- paste0(output_integrated, "/group_comparisons/Mac/")
+####################Figure 5D Mac sub cluster##############################################################
+###########################################################################################################
+DimPlot(macs, group.by = "SubCellTypeM", label = TRUE, label.size = 4) + NoLegend() + ggtitle(label = "") 
+ggsave(paste0(save_path_mac_spec, "new_fig4a_mac_dim.pdf"), width = 8, height = 6, limitsize = FALSE)
+####################Figure 5C Mac sub cluster##############################################################
+###########################################################################################################
+DotPlot(macs, features = c("Lyz1","Plac8","Apoe","Cd209a","Cst3","Hist1h2ap","S100a9","Ctla2a"
+), group.by = "seurat_clusters", cols = c("grey","red")) + RotatedAxis()
+ggsave(paste0(save_path_mac_spec, "fig5a_dot.pdf"), width = 8, height = 3.5, limitsize = FALSE)
+
+macs_cd34 <- VlnPlot(macs, features = c("Cd34"), split.by = "D_UVB", cols = c("grey90")) + NoLegend() +ylab(label = "expression") + xlab(label = "") + ggtitle(label = "Cd34 (Macs)")
+macs_selplg <- VlnPlot(macs, features = c("Selplg"), split.by = "D_UVB", cols = c("grey90")) + NoLegend() +ylab(label = "expression") + xlab(label = "") + ggtitle(label = "Selplg (Macs)")
+macs_cd34 + macs_selplg
+
+macs_itgb2 <- VlnPlot(macs, features = "Itgb2", split.by = "D_UVB", cols = c("grey90")) + NoLegend() +ylab(label = "expression") + xlab(label = "") + ggtitle(label = "Itgb2 (Macs)")
+macsfeature_itgb2 <- FeaturePlot(macs, features = c("Itgb2"))+ NoLegend()  + ggtitle(label = "Itgb2 (Macs)")
+macs_itgb2+macsfeature_itgb2
+```
+##############################
+FIGURES 7A, D & S10A, C & E
+##############################
+```{r fig7_final}
+group_colours <- c("grey50","grey31","red","blue")
+
+endo_dim<-DimPlot(endo, split.by = "seurat_clusters", cols = group_colours)
+endo_selp_icam <- FeaturePlot(endo, features = c("Selp","Icam1","Icam2","Cxcl12"), max.cutoff = 1.5, cols = c("grey", "red"), ncol = 2 )
+endo_selp_icam
+ggsave(paste0(output_integrated, "/final_figures/fig7a_endo.pdf"), width = 7, height = 5, limitsize = FALSE)
+
+lec_dim<-DimPlot(lec, split.by = "seurat_clusters" , cols = group_colours)
+lec_selp_icam <- FeaturePlot(lec, features = c("Selp","Icam1","Icam2"), max.cutoff = 3, cols = c("grey", "red"), ncol = 3)
+#lec_dim  
+lec_selp_icam
+ggsave(paste0(output_integrated, "/final_figures/figs10_lec.pdf"), width = 14, height = 5, limitsize = FALSE)
+
+macs_itgal_itgb2 <- FeaturePlot(macs, features = c("Itgal","Itgb2"), max.cutoff = 1.5, cols = c("grey", "red") )
+t_itgal_itgb2 <- FeaturePlot(tcells, features = c("Itgal","Itgb2"), max.cutoff = 1.5, cols = c("grey", "red") )
+macs_itgal_itgb2 
+ggsave(paste0(output_integrated, "/final_figures/fig7d_mac.pdf"), width = 8, height = 3.5, limitsize = FALSE)
+t_itgal_itgb2
+ggsave(paste0(output_integrated, "/final_figures/fig7d_t.pdf"), width = 8, height = 3.5, limitsize = FALSE)
+```

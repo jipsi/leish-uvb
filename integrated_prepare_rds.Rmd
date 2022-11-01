@@ -1,0 +1,189 @@
+---
+title: "MM21.08"
+author: "Shoumit Dey"
+date: "28/09/2021"
+output: html_document
+---
+1. Load packages
+2. Set paths
+```{r setup}
+#Load packages
+library(Seurat)
+library(SeuratObject)
+library(cowplot)
+library(dplyr)
+library(ggplot2)
+library(AUCell)
+library(stringr)
+library(sqldf)
+library(GSEABase)
+library(ggpubr)
+
+#save all files and folder within your working directory or working directory/your_custom_folder_name/
+#update exp_path if you have a your_custom_folder_name within working directory 
+exp_path <- paste0(getwd(),"/source/")
+
+output_integrated <- getwd()
+
+#set pca dimensions to use and 
+#resolution for cluster identification
+dims=15
+res=0.4
+
+```
+
+Load data and create Seurat Objects - all groups and all samples
+
+```{r load_seurat, message=TRUE}
+# load and QC
+lstConditions <- c("Untd/d0","UVB/d0","Untd/INF","UVB/INF")
+lstSamples <- c("MC2","MD2","ME2","MF2")
+seuratObjList<-list()
+
+for (sample in 1:length(lstSamples)){
+  seuratObj <- Read10X(data.dir = paste0(exp_path, lstSamples[[sample]] ,"/"))
+  seuratObj <- CreateSeuratObject(counts = seuratObj, project = lstSamples[[sample]], min.cells = 3, min.features = 200)
+  seuratObj$D_UVB <- lstConditions[[sample]]
+  p1 <- VlnPlot(seuratObj, features = c("nFeature_RNA", "nCount_RNA"), ncol = 2, pt.size = 0.1)
+  print(seuratObj)
+  p2 <- FeatureScatter(seuratObj, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+  if(lstSamples[[sample]] == "MD2"){
+   seuratObj <- subset(seuratObj, subset = nFeature_RNA > 500 & nFeature_RNA < 4500 & nCount_RNA < 9000 & nCount_RNA > 500) 
+  }
+  else if(lstSamples[[sample]] == "ME2"){
+    seuratObj <- subset(seuratObj, subset = nFeature_RNA > 1000 & nFeature_RNA < 4500 & nCount_RNA < 16000 & nCount_RNA > 3000) 
+  }
+  else {
+    seuratObj <- subset(seuratObj, subset = nFeature_RNA > 500 & nFeature_RNA < 4500 & nCount_RNA < 20000 & nCount_RNA > 1000)
+  }
+  
+  p3 <- VlnPlot(seuratObj, features = c("nFeature_RNA", "nCount_RNA"), ncol = 2, pt.size = 0.1)
+  p4 <- FeatureScatter(seuratObj, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+  #print(p1+p3)
+  print(p2+p4)
+  seuratObjList[[lstSamples[[sample]]]] <- seuratObj
+  print(seuratObjList[[lstSamples[[sample]]]])
+}
+```
+
+```{r prepare and integrate}
+#perform standard preprocessing on each object
+#check gene types
+#grep(pattern = "^Ccl", x = rownames(seuratObj), value = TRUE)
+for (i in 1:length(seuratObjList)) {
+  #seuratObjList[[i]]
+  #'Gm42418 ','AY036118' removed from analysis for finding markers
+  #"Genes Gm42418 and AY036118 were also removed, as they overlap the rRNA element Rn45s and represent rRNA contamination"
+  #Source:https://www.nature.com/articles/s41467-021-27035-8
+  counts <- GetAssayData(seuratObjList[[i]], assay = "RNA")
+  counts <- counts[-(which(rownames(counts) %in% c('Gm42418','AY036118'))),]
+  seuratObjList[[i]] <- subset(seuratObjList[[i]], features = rownames(counts))
+  seuratObjList[[i]] <- PercentageFeatureSet(seuratObjList[[i]], pattern = "^mt-", col.name = "percent.mt")
+  seuratObjList[[i]] <- subset(seuratObjList[[i]], subset = percent.mt < 10)
+  seuratObjList[[i]] <- PercentageFeatureSet(seuratObjList[[i]], pattern = "^Rps", col.name = "percent.rps")
+  seuratObjList[[i]] <- PercentageFeatureSet(seuratObjList[[i]], pattern = "^Rpl", col.name = "percent.rpl")
+  print(seuratObjList[[i]])
+
+}
+
+
+seuratObjList <- lapply(X = seuratObjList, FUN = SCTransform, method = "glmGamPoi", vars.to.regress = c("percent.mt", "percent.rps", "percent.rpl", "nCount_RNA", "nFeature_RNA"), verbose = TRUE)
+
+features <- SelectIntegrationFeatures(object.list = seuratObjList, nfeatures = 3000)
+seuratObjList <- PrepSCTIntegration(object.list = seuratObjList, anchor.features = features)
+
+immune.anchors <- FindIntegrationAnchors(object.list = seuratObjList, normalization.method = "SCT",
+                                         anchor.features = features)
+
+integrated_sctransformed <- IntegrateData(anchorset = immune.anchors, normalization.method = "SCT")#, features.to.integrate = all.feature)
+
+nrow(integrated_sctransformed[["integrated"]]@scale.data)
+
+
+
+```
+run pca and clustering
+```{r pca_and_louvain_cluster}
+
+#number_of_features<-2000
+integrated_sctransformed <- RunPCA(integrated_sctransformed, verbose = FALSE)
+ElbowPlot(integrated_sctransformed)
+integrated_sctransformed <- FindNeighbors(integrated_sctransformed, reduction = "pca", dims = 1:dims)
+integrated_sctransformed <- FindClusters(integrated_sctransformed, verbose = FALSE, resolution=res)
+integrated_sctransformed <- RunUMAP(integrated_sctransformed, reduction = "pca", dims = 1:dims)
+integrated_sctransformed <- RunTSNE(integrated_sctransformed, reduction = "pca", dims = 1:dims)
+
+DimPlot(integrated_sctransformed, label = TRUE, label.box = TRUE)+NoLegend()
+DimPlot(integrated_sctransformed, reduction="tsne", label = TRUE, label.box = TRUE)+NoLegend()
+
+```
+
+Find genes upregulated in inferred clusters
+
+```{r find all markers}
+
+DefaultAssay(integrated_sctransformed) <- "SCT"
+integrated_sctransformed <- SetIdent(integrated_sctransformed, value = "seurat_clusters")
+
+
+integrated_sctransformed <- PrepSCTFindMarkers(integrated_sctransformed, assay = "SCT")
+
+
+all_markers <- FindAllMarkers(integrated_sctransformed, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "SCT")
+
+write.csv(all_markers, paste0(output_integrated, "/markers/","markers_dims",dims,"_res",res,".csv"), row.names = TRUE)
+
+all_markers <- read.csv(paste0(output_integrated, "/markers/","markers_dims",dims,"_res",res,".csv"), header = TRUE)
+
+
+seuratObj <- SetIdent(seuratObj, value = "seurat_clusters")
+all_markers %>%
+    group_by(cluster) %>%
+    top_n(n = 10, wt = avg_log2FC) -> top10
+DoHeatmap(seuratObj, features = top10$gene) + NoLegend()
+ggsave(paste0(output_integrated, "markers/heatmap.pdf"), width = 15, height = 20)
+ggsave(paste0(output_integrated, "markers/heatmap.png"), width = 15, height = 20)
+
+integrated_sctransformed <- SetIdent(integrated_sctransformed, value = "seurat_clusters")
+
+```
+
+The following may change when re-running integration especially if number of PCs used for clustering or resolution of clustering is modified
+```{r phenotyping}
+
+
+#The following may change when re-running integration especially if number of PCs used for clustering or resolution of clustering is modified
+integrated_sctransformed <- SetIdent(integrated_sctransformed, value = "seurat_clusters")
+integrated_sctransformed <- RenameIdents(integrated_sctransformed, `0` = "FIV", `1` = "FV", `2` = "FIII", `3` = "FI", `4` = "Mac", `5` = "T_NK", `6` = "FVI", `7` = "EndoI", `8` = "FII", `9` = "Basal", `10` = "tDP", `11` = "RBCs", `12` = "LEC_LV", `13` = "Myofibroblasts", `14` = "Schwann", `15` = "Sebocytes")
+
+
+#Add phenotype information to metadata
+integrated_sctransformed$CellTypeM<-Idents(integrated_sctransformed)
+#Visualise phenotypes in low dimensional space																	
+DimPlot(integrated_sctransformed, label = TRUE, label.box = TRUE)+NoLegend()
+
+pdf(paste0(output_integrated, "/phenotyping/","integrated_mm2108_","dims",dims,"_res",res,".pdf"))
+  DimPlot(integrated_sctransformed, reduction="pca", label = TRUE, label.box = TRUE)+NoLegend()
+  DimPlot(integrated_sctransformed, label = TRUE, label.box = TRUE)+NoLegend()
+  DimPlot(integrated_sctransformed, reduction="tsne", label = TRUE, label.box = TRUE)+NoLegend()
+dev.off()
+#Output proportion per cell type, dividing by the sum of the column (margin=2)
+prop.table(table(Idents(integrated_sctransformed), integrated_sctransformed$orig.ident), margin = 2)
+#write proportion per cell type
+write.csv(prop.table(table(Idents(integrated_sctransformed), integrated_sctransformed$orig.ident), margin = 2), paste0(output_integrated, "/phenotyping/", "_ident_proportions_sample.csv"), row.names =TRUE)
+
+
+```
+
+
+```{r explore_metadata}
+colnames(integrated_sctransformed@meta.data)
+
+
+output_string <- paste0(output_integrated, "integrated_mm2108_","dims",dims,"_res",res,".rds")
+print(paste0("Saving as:", output_string))
+saveRDS(integrated_sctransformed,output_string)
+rm(output_string)
+
+```
+
