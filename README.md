@@ -2,7 +2,7 @@
 
 Code to replicate the figures in the manuscript - 
 
-#UVB light exposure drives effector T cell responses and modifies skin stromal-immune crosstalk during L. donovani infection
+# UVB light exposure drives effector T cell responses and modifies skin stromal-immune crosstalk during L. donovani infection
 
 Marcela Montes de Oca1#, Shoumit Dey1#, Katrien Van Bocxlaer1, Helen Ashwin1, Najmeeyah Brown1, Elmarie Myburgh1, Nidhi S Dey1, Gulab F Rani1, Edward Muscutt1, Mohamed Osman1, Damian Perez-Mazliah1, Sally James2, Lesley Gilbert2 and Paul M Kaye1
 
