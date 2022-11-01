@@ -9,7 +9,7 @@ Marcela Montes de Oca1#, Shoumit Dey1#, Katrien Van Bocxlaer1, Helen Ashwin1, Na
 1 York Biomedical Research Institute, University of York, Heslington, YO10 5DD, York, UK
 2 Genomics Laboratory, Bioscience Technology Facility, University of York, Heslington, YO10 5DD, York, UK
 
-# These authors contributed equally.
+'#' These authors contributed equally.
 
 Background: The steady state balance between stromal and immune cells can be perturbed by environmental stimuli such as UVB light. Little is known about how UVB changes stromal-immune cell cross talk during skin infection.  
 
