@@ -1,4 +1,16 @@
-# leish-uvb
+# Project: leish-uvb (instructions)
+- Maintain folder structure as per the repository
+
+Option1 : Start from scratch
+- Download all samples/10x files from GSMXXXX into source/'sample_name'/
+- Start with integrated_prepare_rds.Rmd
+
+Option2 : Start from prepare Rds
+- Download Rds from googledrive link into your working directory
+- Start with integrated_downstream.Rmd
+
+For cellchat start with cellchat.Rmd
+
 
 Code to replicate the figures in the manuscript - 
 
