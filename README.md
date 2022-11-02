@@ -4,11 +4,11 @@ Code to replicate the figures in the manuscript -
 
 # UVB light exposure drives effector T cell responses and modifies skin stromal-immune crosstalk during L. donovani infection
 
-Marcela Montes de Oca1#, Shoumit Dey1#, Katrien Van Bocxlaer1, Helen Ashwin1, Najmeeyah Brown1, Elmarie Myburgh1, Nidhi S Dey1, Gulab F Rani1, Edward Muscutt1, Mohamed Osman1, Damian Perez-Mazliah1, Sally James2, Lesley Gilbert2 and Paul M Kaye1
+Marcela Montes de Oca1#, Shoumit Dey1#, Katrien Van Bocxlaer1, Helen Ashwin1, Najmeeyah Brown1, Elmarie Myburgh1, Nidhi S Dey1, Gulab F Rani1, Edward Muscutt1, Mohamed Osman1, Damian Perez-Mazliah1, Sally James2, Lesley Gilbert2, Mitali Chatterjee3 and Paul M Kaye1
 
 1 York Biomedical Research Institute, University of York, Heslington, YO10 5DD, York, UK
 2 Genomics Laboratory, Bioscience Technology Facility, University of York, Heslington, YO10 5DD, York, UK
-
+3 Dept. of Pharmacology, Institute of Postgraduate Medical Education & Research, Kolkata, 700 020, India
 '#' These authors contributed equally.
 
 Background: The steady state balance between stromal and immune cells can be perturbed by environmental stimuli such as UVB light. Little is known about how UVB changes stromal-immune cell cross talk during skin infection.  
