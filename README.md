@@ -1,15 +1,15 @@
 # Project: leish-uvb (instructions)
 - Maintain folder structure as per the repository
 
-####Option1 : Start from scratch using raw 10x files
+#### Option1 : Start from scratch using raw 10x files
 - Download all samples/10x files from GSMXXXX into source/'sample_name'/
 - Start with integrated_prepare_rds.Rmd
 
-####Option2 : Start from prepared Rds containing primary clustering analysis
+#### Option2 : Start from prepared Rds containing primary clustering analysis
 - Download Rds from googledrive link into your working directory
 - Start with integrated_downstream.Rmd
 
-####For figures relating to ligand-receptor interactions using cellchat, please start with cellchat.Rmd
+#### For figures relating to ligand-receptor interactions using cellchat, please start with cellchat.Rmd
 
 
 Code to replicate the figures in the manuscript - 
