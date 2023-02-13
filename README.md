@@ -1,5 +1,5 @@
 # Project: leish-uvb (instructions)
-- Maintain folder structure as per the repository
+- Please maintain folder structure as per the repository
 
 #### Option1 : Start from scratch using raw 10x files
 - Download all samples/10x files from GSMXXXX into source/'sample_name'/
