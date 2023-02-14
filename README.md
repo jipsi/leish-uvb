@@ -54,7 +54,17 @@ Reported as sessionInfo()
 - Start with integrated_downstream.Rmd
 - This file will take approximately 25-30 minutes to run from start to finish on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
 
-#### 3. For spatial data
+#### 3. For spatial data: To see how the data is integrated please look at integrated_spatial_prepare_rds.Rmd. However the raw data will be made available upon publication but please use <u>'Option 2'</u> using the Rds file (link below) to load the integrated data for inspection, analysis or re-creating figures in  below.
+
+##### Option1 : Start from scratch using raw 10x files (available post publication)
+- Download all samples/10x files from GSMXXXX into source/'Visium_slide_name'/
+- Start with integrated_spatial_prepare_rds.Rmd
+
+##### Option2 : Start from prepared Rds containing primary clustering analysis
+- Download Rds only_mm2108_skin_merged.rds (Single cell RNA seq) from https://zenodo.org/record/7638456 into your working directory
+- Download q05_cell_abundance_w_sf_barcoded.csv from repository to your working directory
+- Start with integrated_spatial_cell2location.Rmd
+- This file will take approximately 5-10 minutes to run from start to finish on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
 
 #### 4. For figures relating to ligand-receptor interactions using cellchat, please start with cellchat.Rmd. 
 - Please follow the instructions in the code, most importantly after setting up folders and loading libraries please make sure the following Rds files are stored in the respective folders
@@ -63,6 +73,38 @@ Reported as sessionInfo()
 - cellchat_UVB_d0.rds
 - cellchat_UVB_INF.rds
 - Files are available at the zenodo link: https://zenodo.org/record/7638456
+- When re-running cellchat (see chunks below figure outputs in cellchat.Rmd), this file will take approximately 25-30 minutes to run from start to finish on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
+
+#### 5. Cell2location: Generating q05_cell_abundance_w_sf_barcoded.csv
+### Cell2location v0.1 (https://cell2location.readthedocs.io/en/latest/) was run by following the instructions as per the tool's tutorial for [mapping lymph nodes](https://cell2location.readthedocs.io/en/latest/notebooks/cell2location_tutorial.html). The code was run on University of York's HPC, namely, Viking using GPU node with 1 GPU, 1 node utilising 40GB RAM in approximately 2.5 hours. 1 hour for reference modelling and 1.5 hours for modelling the spatial data to calculate cell abundances in Visium spots 
+- Cell2location was installed in its own environment as per the instructions
+- RAW single cell data (this study) and RAW spatial data (this study) was used as input to cell2location
+- Output was stored as a model.pt file and anndata file containing q05 abundances as metadata
+- Python scripts were submitted to a job manager on the HPC as a shell script
+> #!/bin/bash
+> #SBATCH --job-name=XXXX
+> #SBATCH --mail-type=END
+> #SBATCH --mail-user=shoumit.dey@york.ac.uk
+> #SBATCH --ntasks=1
+> #SBATCH --cpus-per-task=1
+> #SBATCH --mem=40gb
+> #SBATCH --time=04:00:00
+> #SBATCH --output=sd22.5.1.log
+> #SBATCH --account=XXXX
+> #SBATCH --partition=gpu
+> #SBATCH --gres=gpu:1
+> 
+> module load system/CUDA/10.0.130
+> module load lang/Miniconda3/4.9.2
+> 
+> source activate cell2loc_env2
+> 
+> command -v python
+> 
+> python config.py
+> 
+> source deactivate
+- Python code used is available in the repository. Running this will require RAW data which will be available on publication. For a demo we have provided one Visium sample (...) and our single cell dataset in 'diet' anndata format here: https://zenodo.org/record/7638456
 
 ## UVB modifies skin immune-stroma cross-talk and promotes effector T cell recruitment during cryptic Leishmania donovani infection 
 
