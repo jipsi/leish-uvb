@@ -127,6 +127,6 @@ Many parasites of significant public health importance assume skin residency wit
 - You can write this as a CSV file to explore abundances further.
 
 
-##License
+## License
 
-###This project is covered under the <b>MIT License</b>.
+### This project is covered under the <b>MIT License</b>.
