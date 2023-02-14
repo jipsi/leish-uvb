@@ -48,7 +48,7 @@ Linux: CentOS Linux 7 Core (For all Python scripts running cell2location)
 
 ## UVB modifies skin immune-stroma cross-talk and promotes effector T cell recruitment during cryptic Leishmania donovani infection 
 
-Marcela Montes de Oca^1#^, Shoumit Dey^1#^, Katrien Van Bocxlaer^1^, Helen Ashwin^1^, Najmeeyah Brown^1^, Elmarie Myburgh^1^, Nidhi S Dey^1^, Gulab F Rani^1^, Edward Muscutt^1^, Mohamed Osman^1^, Damian Perez-Mazliah^1^, Sally James^2^, Lesley Gilbert^2^, Mitali Chatterjee^3^ and Paul M Kaye^1^
+Marcela Montes de Oca<sup>1#<sup>, Shoumit Dey^1#^, Katrien Van Bocxlaer^1^, Helen Ashwin^1^, Najmeeyah Brown^1^, Elmarie Myburgh^1^, Nidhi S Dey^1^, Gulab F Rani^1^, Edward Muscutt^1^, Mohamed Osman^1^, Damian Perez-Mazliah^1^, Sally James^2^, Lesley Gilbert^2^, Mitali Chatterjee^3^ and Paul M Kaye^1^
 
 1 York Biomedical Research Institute, University of York, Heslington, YO10 5DD, York, UK
 2 Genomics Laboratory, Bioscience Technology Facility, University of York, Heslington, YO10 5DD, York, UK
