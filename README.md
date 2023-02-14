@@ -1,3 +1,17 @@
+## UVB modifies skin immune-stroma cross-talk and promotes effector T cell recruitment during cryptic Leishmania donovani infection 
+
+Marcela Montes de Oca<sup>1#</sup>, Shoumit Dey<sup>1#</sup>, Katrien Van Bocxlaer<sup>1</sup>, Helen Ashwin<sup>1</sup>, Najmeeyah Brown<sup>1</sup>, Elmarie Myburgh<sup>1</sup>, Nidhi S Dey<sup>1</sup>, Gulab F Rani<sup>1</sup>, Edward Muscutt<sup>1</sup>, Mohamed Osman<sup>1</sup>, Damian Perez-Mazliah<sup>1</sup>, Sally James<sup>2</sup>, Lesley Gilbert<sup>2</sup>, Mitali Chatterjee<sup>3</sup> and Paul M Kaye<sup>1</sup>
+
+1 York Biomedical Research Institute, University of York, Heslington, YO10 5DD, York, UK
+2 Genomics Laboratory, Bioscience Technology Facility, University of York, Heslington, YO10 5DD, York, UK
+3 Dept. of Pharmacology, Institute of Postgraduate Medical Education & Research, Kolkata, 700 020, India
+'#' These authors contributed equally.
+
+#### Currently available as a pre-print on bioRxiv:  https://www.biorxiv.org/content/10.1101/2023.02.03.526940v1
+
+### Summary: 
+Many parasites of significant public health importance assume skin residency without causing overt pathology. How immune and stromal cells respond to such “cryptic” infections and how exposure to UVB alters such responses in poorly understood. We combined scRNA-seq, spatial transcriptomics and inferential network analysis to address these questions in a model of cryptic skin infection by Leishmania donovani. In infected C57BL/6 mice, p-selectin and CXCL12 interactions dominate intercellular communication between leucocytes, fibroblast and endothelial cells, but effector T cell function remains muted. Following UVB exposure, increased numbers of IFNγ+ CD4+ Th1 cells and NK cells enter the skin, communicating with stromal cells via CCL5-CCR5 and LFA-1-ICAM1/2. However, spatial mapping indicated that Th1 cells and macrophages occupied distinct niches after UVB exposure, likely limiting effector function. Our data provide the first holistic view of the immune landscape during cryptic L. donovani infection and demonstrate how UVB exposure fundamentally reshapes this response.
+
 # Project: leish-uvb (instructions)
 ## Software requirements: 
 
@@ -111,16 +125,4 @@
 >  adata_vis.obs[adata_vis.uns['mod']['factor_names']] = adata_vis.obsm['q05_cell_abundance_w_sf']
 
 
-## UVB modifies skin immune-stroma cross-talk and promotes effector T cell recruitment during cryptic Leishmania donovani infection 
 
-Marcela Montes de Oca<sup>1#</sup>, Shoumit Dey<sup>1#</sup>, Katrien Van Bocxlaer<sup>1</sup>, Helen Ashwin<sup>1</sup>, Najmeeyah Brown<sup>1</sup>, Elmarie Myburgh<sup>1</sup>, Nidhi S Dey<sup>1</sup>, Gulab F Rani<sup>1</sup>, Edward Muscutt<sup>1</sup>, Mohamed Osman<sup>1</sup>, Damian Perez-Mazliah<sup>1</sup>, Sally James<sup>2</sup>, Lesley Gilbert<sup>2</sup>, Mitali Chatterjee<sup>3</sup> and Paul M Kaye<sup>1</sup>
-
-1 York Biomedical Research Institute, University of York, Heslington, YO10 5DD, York, UK
-2 Genomics Laboratory, Bioscience Technology Facility, University of York, Heslington, YO10 5DD, York, UK
-3 Dept. of Pharmacology, Institute of Postgraduate Medical Education & Research, Kolkata, 700 020, India
-'#' These authors contributed equally.
-
-#### Currently available as a pre-print on bioRxiv:  https://www.biorxiv.org/content/10.1101/2023.02.03.526940v1
-
-### Summary: 
-Many parasites of significant public health importance assume skin residency without causing overt pathology. How immune and stromal cells respond to such “cryptic” infections and how exposure to UVB alters such responses in poorly understood. We combined scRNA-seq, spatial transcriptomics and inferential network analysis to address these questions in a model of cryptic skin infection by Leishmania donovani. In infected C57BL/6 mice, p-selectin and CXCL12 interactions dominate intercellular communication between leucocytes, fibroblast and endothelial cells, but effector T cell function remains muted. Following UVB exposure, increased numbers of IFNγ+ CD4+ Th1 cells and NK cells enter the skin, communicating with stromal cells via CCL5-CCR5 and LFA-1-ICAM1/2. However, spatial mapping indicated that Th1 cells and macrophages occupied distinct niches after UVB exposure, likely limiting effector function. Our data provide the first holistic view of the immune landscape during cryptic L. donovani infection and demonstrate how UVB exposure fundamentally reshapes this response.
