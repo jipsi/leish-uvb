@@ -29,7 +29,7 @@ Linux: CentOS Linux 7 Core (For all Python scripts running cell2location)
 >  [1] reshape2_1.4.4     ggpubr_0.5.0       sqldf_0.4-11       RSQLite_2.2.20     gsubfn_0.7         proto_1.0.0        stringr_1.5.0     
 >  [8] ggplot2_3.4.0      dplyr_1.0.10       cowplot_1.1.1      SeuratObject_4.1.3 Seurat_4.3.0 
 
-#### 3. Additional packages required for spatial analysis, cellchat and preparing data for cell2location
+#### 3. Additional packages required for spatial analysis, cellchat (https://github.com/sqjin/CellChat) and preparing data for cell2location (https://cell2location.readthedocs.io/en/latest/)
 #### 4. Packages required - see session information below
 
 ## Code to replicate the figures in the manuscript (please note the following instructions)
