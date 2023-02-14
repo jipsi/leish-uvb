@@ -81,18 +81,19 @@ Reported as sessionInfo()
 - RAW single cell data (this study) and RAW spatial data (this study) was used as input to cell2location
 - Output was stored as a model.pt file and anndata file containing q05 abundances as metadata
 - Python scripts were submitted to a job manager on the HPC as a shell script
-> -#!/bin/bash
-> -#SBATCH --job-name=XXXX
-> -#SBATCH --mail-type=END
-> -#SBATCH --mail-user=shoumit.dey@york.ac.uk
-> -#SBATCH --ntasks=1
-> -#SBATCH --cpus-per-task=1
-> -#SBATCH --mem=40gb
-> -#SBATCH --time=04:00:00
-> -#SBATCH --output=sd22.5.1.log
-> -#SBATCH --account=XXXX
-> -#SBATCH --partition=gpu
-> -#SBATCH --gres=gpu:1
+
+-> #!/bin/bash
+-> #SBATCH --job-name=XXXX
+> #SBATCH --mail-type=END
+> #SBATCH --mail-user=shoumit.dey@york.ac.uk
+> #SBATCH --ntasks=1
+> #SBATCH --cpus-per-task=1
+> #SBATCH --mem=40gb
+> #SBATCH --time=04:00:00
+> #SBATCH --output=sd22.5.1.log
+> #SBATCH --account=XXXX
+> #SBATCH --partition=gpu
+> #SBATCH --gres=gpu:1
 > 
 > module load system/CUDA/10.0.130
 > module load lang/Miniconda3/4.9.2
