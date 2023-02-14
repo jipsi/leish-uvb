@@ -41,7 +41,7 @@ Reported as sessionInfo()
 
 ## Code to replicate the figures in the manuscript (please note the following instructions)
 
-#### 1. Code will attempt to create folder structure as showing in the repository. Please maintain folder structure as per the repository for the plots/Rds files to save in the correct folders. Download all Rds files from 10.5281/zenodo.7638456 to your working folder as mentioned in each step.
+#### 1. Code will attempt to create folder structure as showing in the repository. Please maintain folder structure as per the repository for the plots/Rds files to save in the correct folders. Download all Rds files from https://zenodo.org/record/7638456 to your working folder as mentioned in each step.
 
 #### 2. To see how the data is integrated please look at integrated_prepare_rds.Rmd. However the raw data will be made available upon publication but please use the Rds file link below to load the integrated data for inspection, analysis or re-creating figures in <u>'Option 2'</u> below
 
@@ -50,7 +50,7 @@ Reported as sessionInfo()
 - Start with integrated_prepare_rds.Rmd
 
 ##### Option2 : Start from prepared Rds containing primary clustering analysis
-- Download Rds integrated_mm2108_dims15_res0.4.rds (Single cell RNA seq) from 10.5281/zenodo.7638456 into your working directory
+- Download Rds integrated_mm2108_dims15_res0.4.rds (Single cell RNA seq) from https://zenodo.org/record/7638456 into your working directory
 - Start with integrated_downstream.Rmd
 - This file will take approximately 25-30 minutes to run from start to finish on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
 
@@ -62,7 +62,7 @@ Reported as sessionInfo()
 - cellchat_Untd_INF.rds
 - cellchat_UVB_d0.rds
 - cellchat_UVB_INF.rds
-- Files are available at the zenodo link: 10.5281/zenodo.7638456
+- Files are available at the zenodo link: https://zenodo.org/record/7638456
 
 ## UVB modifies skin immune-stroma cross-talk and promotes effector T cell recruitment during cryptic Leishmania donovani infection 
 
