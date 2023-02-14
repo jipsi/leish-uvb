@@ -80,10 +80,10 @@ Reported as sessionInfo()
 - Cell2location was installed in its own environment as per the instructions
 - RAW single cell data (this study) and RAW spatial data (this study) was used as input to cell2location
 - Output was stored as a model.pt file and anndata file containing q05 abundances as metadata
-- Python scripts were submitted to a job manager on the HPC as a shell script
+- Python scripts were submitted to a job manager (slurm) on the HPC as a shell script with the following batch parameters and script
 
--> #!/bin/bash
--> #SBATCH --job-name=XXXX
+> #!/bin/bash
+> #SBATCH --job-name=XXXX
 > #SBATCH --mail-type=END
 > #SBATCH --mail-user=shoumit.dey@york.ac.uk
 > #SBATCH --ntasks=1
