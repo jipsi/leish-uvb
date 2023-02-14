@@ -11,7 +11,7 @@
 
 #### 1. R version 4.2.2
 #### 2. RStudio 2022.02.3+492 (Optional)
-#### 3. Packages required - see session information below
+#### 3. Package versioning required - see session information below
 
 > sessionInfo()
 > R version 4.2.2 (2022-10-31 ucrt)
