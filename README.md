@@ -2,9 +2,9 @@
 ## Software requirements: 
 
 ### OS
-Windows: Windows 10 x64 (For all R based code)
-Mac
-Linux: CentOS Linux 7 Core (For all Python scripts running cell2location)
+- Windows: Windows 10 x64 (For all R based code)
+- Mac
+- Linux: CentOS Linux 7 Core (For all Python scripts running cell2location)
 
 ### Software 
 
@@ -36,7 +36,7 @@ Linux: CentOS Linux 7 Core (For all Python scripts running cell2location)
 
 ## Code to replicate the figures in the manuscript (please note the following instructions)
 
-#### 1. Please maintain folder structure as per the repository for the plots/Rds files to save in the correct folders.
+#### 1. Code will attempt to create folder structure as showing in the repository. Please maintain folder structure as per the repository for the plots/Rds files to save in the correct folders.
 #### 2. To see how the data is integrated please look at integrated_prepare_rds.Rmd. However the raw data will be made available upon publication but please use the Rds file link below to load the integrated data for inspection, analysis or re-creating figures in <u>'Option 2'</u> below
 
 ##### Option1 : Start from scratch using raw 10x files (available post publication)
@@ -46,10 +46,15 @@ Linux: CentOS Linux 7 Core (For all Python scripts running cell2location)
 ##### Option2 : Start from prepared Rds containing primary clustering analysis
 - Download Rds integrated_mm2108_dims15_res0.4.rds (Single cell RNA seq) from .... into your working directory
 - Start with integrated_downstream.Rmd
+- This file will take approximately 25-30 minutes to run from start to finish on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
 
 #### 3. For spatial data
 
-#### For figures relating to ligand-receptor interactions using cellchat, please start with cellchat.Rmd
+#### 4. For figures relating to ligand-receptor interactions using cellchat, please start with cellchat.Rmd. Additional packages reported as sessionInfo()
+> other attached packages:
+> [1] wordcloud_2.6       RColorBrewer_1.1-3  ggalluvial_0.12.3   NMF_0.25            cluster_2.1.4       rngtools_1.5.2      registry_0.5-1       > stringr_1.5.0      
+> [9] SeuratObject_4.1.3  Seurat_4.3.0        patchwork_1.1.2     CellChat_1.6.1      Biobase_2.58.0      BiocGenerics_0.44.0 ggplot2_3.4.0       > igraph_1.3.5       
+> [17] dplyr_1.0.10  
 
 ## UVB modifies skin immune-stroma cross-talk and promotes effector T cell recruitment during cryptic Leishmania donovani infection 
 
