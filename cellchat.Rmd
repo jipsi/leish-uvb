@@ -1,7 +1,7 @@
 ---
 title: "mm21.08 CellChat"
 author: "Shoumit Dey"
-date: '2022-07-09'
+date: '01/01/2023'
 output: html_document
 ---
 
@@ -18,7 +18,20 @@ library(wordcloud)
 #save all files and folder within your working directory or working directory/your_custom_folder_name/
 #update exp_path if you have a your_custom_folder_name within working directory 
 exp_path <- paste0(getwd(),"/")
+dir.create(paste0(exp_path, "cellchat"))
 save_within <- paste0(exp_path,"/cellchat/")
+
+
+#create directories
+dir.create(paste0(save_within, "Untd_d0"))
+dir.create(paste0(save_within, "UVB_d0"))
+dir.create(paste0(save_within, "Untd_INF"))
+dir.create(paste0(save_within, "UVB_INF"))
+
+#####################################NOTE#########################
+#AFTER RUNNING THIS CHUNK PLEASE DOWNLOAD RDS files from 10.5281/zenodo.7638456
+#to the corresponding directory above
+#################################################################
 ```
 
 
@@ -78,8 +91,9 @@ pdf(paste0(save_within, "information_flow.pdf"), height = 6, width = 6)
 dev.off()
 
 ```
-
-#FOR FIGURES 6B & C, 7E and S9A
+##############################
+Main figures 6b, 7e & Suppl. 6b
+##############################
 ```{r individual_cellchat}
 groups<-c("Untd_d0","Untd_INF","UVB_d0","UVB_INF")
 chat_utd <- readRDS(paste0(save_within, groups[1], "/cellchat_",groups[1],".rds"))
@@ -96,8 +110,8 @@ chat_ub_inf@netP$pathways
 group <- "UVB_INF"
 uvb_list <- c("ITGAL-ITGB2", "SEMA3", "SPP1", "MAG","VCAM","CD86")
 #######The following PDF will contain the above listed interactions###
-#######FIGURE 6C Itgal_Itgb2 - Icam1/2: Page 1 of the PDF
-#######FIGURE 7E +UVB; +L.donovani(i.vi.) Chemokine and complement contribution: Page 7 of the PDF
+#######FIGURE 6c Itgal_Itgb2 - Icam1/2: Page 1 of the PDF
+#######FIGURE 7e +UVB; +L.donovani(i.vi.) Chemokine and complement contribution: Page 7 of the PDF
 ######################################################################
 pdf(paste0(save_within, group,"/", group, "_chords.pdf"))
   for(signal in uvb_list){
@@ -106,11 +120,11 @@ pdf(paste0(save_within, group,"/", group, "_chords.pdf"))
   pathways.show <- c("CXCL","CCL","COMPLEMENT") 
   netVisual_chord_gene(chat_ub_inf, legend.pos.x = 15, signaling = pathways.show)
 dev.off()
-#######FIGURE S9 +UVB; +L.donovani(i.vi.) Contribution of top 6 pathways: Page 1 of the PDF
+#######FIGURE Supp. 6b +UVB; +L.donovani(i.vi.) Contribution of top 6 pathways: Page 1 of the PDF
 ######################################################################
 gg <- netAnalysis_contribution(chat_ub_inf, signaling = uvb_list, font.size = 8)
 ggsave(filename=paste0(save_within, "/",group,"/", group, "_L-R_contribution.pdf"), plot=gg, width = 3, height = 2, units = 'in', dpi = 300)
-#######FIGURE S9 +UVB; +L.donovani(i.vi.) Contribution of complement, CCLs and CXCLs: Page 1 of the PDF
+#######FIGURE Supp. 6b +UVB; +L.donovani(i.vi.) Contribution of complement, CCLs and CXCLs: Page 1 of the PDF
 ######################################################################
 cc <- netAnalysis_contribution(chat_ub_inf, signaling = pathways.show, font.size = 8)
 ggsave(filename=paste0(save_within, "/",group,"/", group, "CCs_L-R_contribution.pdf"), plot=cc, width = 3, height = 2, units = 'in', dpi = 300)
@@ -120,9 +134,9 @@ ggsave(filename=paste0(save_within, "/",group,"/", group, "CCs_L-R_contribution.
 group <- "Untd_INF"
 inf_list <- c("CD34","GALECTIN","SELPLG","PARs","LIFR","CDH")
 #######The following PDF will contain the above listed interactions###
-#######FIGURE 6B CD34-Selp : Page 1 of the PDF
-#######FIGURE 6B Selplg-Selp: Page 3 of the PDF
-#######FIGURE 7E -UVB; +L.donovani(i.vi.) Chemokine and complement contribution: Page 7 of the PDF
+#######FIGURE 6b CD34-Selp : Page 1 of the PDF
+#######FIGURE 6b Selplg-Selp: Page 3 of the PDF
+#######FIGURE 7e -UVB; +L.donovani(i.vi.) Chemokine and complement contribution: Page 7 of the PDF
 ######################################################################
 pdf(paste0(save_within, group, "/", group,"_chords.pdf"))
   for(signal in inf_list){
@@ -131,11 +145,11 @@ pdf(paste0(save_within, group, "/", group,"_chords.pdf"))
   pathways.show <- c("CXCL","CCL","COMPLEMENT") 
   netVisual_chord_gene(chat_inf, legend.pos.x = 15, signaling = pathways.show)
 dev.off()
-#######FIGURE S9 -UVB; +L.donovani(i.vi.) Contribution of top 6 pathways: Page 1 of the PDF
+#######FIGURE Supp. 6b -UVB; +L.donovani(i.vi.) Contribution of top 6 pathways: Page 1 of the PDF
 ######################################################################
 gg <- netAnalysis_contribution(chat_inf, signaling = inf_list, font.size = 8)
 ggsave(filename=paste0(save_within, "/",group,"/", group, "_L-R_contribution.pdf"), plot=gg, width = 3, height = 2, units = 'in', dpi = 300)
-#######FIGURE S9 -UVB; +L.donovani(i.vi.) Contribution of complement, CCLs and CXCLs: Page 1 of the PDF
+#######FIGURE Supp. 6b -UVB; +L.donovani(i.vi.) Contribution of complement, CCLs and CXCLs: Page 1 of the PDF
 ######################################################################
 cc <- netAnalysis_contribution(chat_inf, signaling = pathways.show, font.size = 8)
 ggsave(filename=paste0(save_within, "/",group,"/", group, "_CCs_L-R_contribution.pdf"), plot=cc, width = 3, height = 2, units = 'in', dpi = 300)
@@ -205,99 +219,6 @@ fn_infer_cell_cell <- function(obj){
   return(obj)
 }
 
-# fn_auto_save_all_interactions <- function(obj, group, path){
-#   pathways.show.all <- obj@netP$pathways
-#   # check the order of cell identity to set suitable vertex.receiver
-#   levels(obj@idents)
-#   vertex.receiver = seq(1,4)
-#   for (i in 1:length(pathways.show.all)) {
-#       # Visualize communication network associated with both signaling pathway and individual L-R pairs
-#       #nvh_gg <- netVisual(obj, signaling = pathways.show.all[i], vertex.receiver = vertex.receiver, layout = "hierarchy")
-#       #ggsave(filename=paste0(path, group, pathways.show.all[i], "_L-R_hierarchy.png"), plot=nvh_gg, width = 3, height = 2, units = 'in', dpi = 300)
-#       # Compute and visualize the contribution of each ligand-receptor pair to the overall signaling pathway
-#       gg <- netAnalysis_contribution(obj, signaling = pathways.show.all[i], font.size = 8)
-#       ggsave(filename=paste0(path, group, "_", pathways.show.all[i], "_L-R_contribution.pdf"), plot=gg, width = 3, height = 2, units = 'in', dpi = 300)
-#   }
-# }
-# 
-# fn_bubble_chord <- function(obj, group, path){
-#     targets_use <- c(1:16)
-#     # Bubble plot
-#     # We can also show all the significant interactions (L-R pairs) from some cell groups to other cell groups using netVisual_bubble.
-#     
-#     # show all the significant interactions (L-R pairs) from some cell groups (defined by 'sources.use') to other cell groups (defined by 'targets.use')
-#    list_cells_in_order <- c("FIV","FV","FIII","FI","Mac","T","FVI","EndoI","FII","Basal","tDP","RBCs","LEC_LV","Myofibroblasts","Schwann","Sebocytes")
-#    cell_counter <- 1
-#    for(cell in list_cells_in_order){
-#     nv_gg<-netVisual_bubble(obj, sources.use = cell_counter, targets.use = targets_use, remove.isolate = FALSE, title.name = cell, thresh = 0.01)
-#     ggsave(filename=paste0(path, cell  ,"_bubble_significant_LRs_inf_utd.pdf"), plot=nv_gg, width = 8, height = 10, units = 'in', dpi = 300)
-#     cell_counter <- cell_counter + 1     
-#    }
-#    # nv_gg<-netVisual_bubble(obj, sources.use = 2, targets.use = targets_use, remove.isolate = FALSE, title.name = "FV")
-#    # ggsave(filename=paste0(path, group, "FV_bubble_significant_LRs_inf_utd.pdf"), plot=nv_gg, width = 8, height = 10, units = 'in', dpi = 300)
-#    # nv_gg<-netVisual_bubble(obj, sources.use = 5, targets.use = targets_use, remove.isolate = FALSE, title.name = "Mac")
-#    # ggsave(filename=paste0(path, group, "Mac_bubble_significant_LRs_inf_utd.pdf"), plot=nv_gg, width = 8, height = 10, units = 'in', dpi = 300)
-#    # nv_gg<-netVisual_bubble(obj, sources.use = 6, targets.use = targets_use, remove.isolate = FALSE, title.name = "T")
-#    # ggsave(filename=paste0(path, group, "T_bubble_significant_LRs_inf_utd.pdf"), plot=nv_gg, width = 8, height = 10, units = 'in', dpi = 300)
-#    
-#   
-#   pdf(paste0(path, group, "chord_significant_LRs_inf_utd.pdf"), width = 12, height = 12) 
-#     
-#     gg_scatter <- netAnalysis_signalingRole_scatter(obj, title = names(obj), show.legend = FALSE, label.size = 5, dot.size = 5, font.size = 12, )
-#     print(gg_scatter)
-#     #> Comparing communications on a single object
-#     #> # show all the significant interactions (L-R pairs) from some cell groups (defined by 'sources.use') to other cell groups (defined by 'targets.use')
-#     # show all the interactions sending from FIII
-#     #show signals from (sources.use) from FibroblastV (2), mac (5) and T cells (6)
-#     #netVisual_chord_gene(obj, sources.use = targets_use, targets.use = targets_use, lab.cex = 0.75,legend.pos.y = 30, title.name = "ALL")
-#     netVisual_chord_gene(obj, sources.use = 1, targets.use = targets_use, lab.cex = 0.75,legend.pos.y = 30, title.name = "FIV")
-#     netVisual_chord_gene(obj, sources.use = 2, targets.use = targets_use, lab.cex = 0.75,legend.pos.y = 30, title.name = "FV")
-#     netVisual_chord_gene(obj, sources.use = 3, targets.use = targets_use, lab.cex = 0.75,legend.pos.y = 30, title.name = "FI")
-#     netVisual_chord_gene(obj, sources.use = 4, targets.use = targets_use, lab.cex = 0.75,legend.pos.y = 30, title.name = "FIII")
-#     netVisual_chord_gene(obj, sources.use = 5, targets.use = targets_use, lab.cex = 0.75,legend.pos.y = 30, title.name = "Mac")
-#     netVisual_chord_gene(obj, sources.use = 6, targets.use = targets_use, lab.cex = 0.75,legend.pos.y = 30, title.name = "T")
-#     netVisual_chord_gene(obj, sources.use = 7, targets.use = targets_use, lab.cex = 0.75,legend.pos.y = 30, title.name = "FVI")
-#     netVisual_chord_gene(obj, sources.use = 8, targets.use = targets_use, lab.cex = 0.75,legend.pos.y = 30, title.name = "Endo")
-#     netVisual_chord_gene(obj, sources.use = 9, targets.use = targets_use, lab.cex = 0.75,legend.pos.y = 30, title.name = "FII")
-#     netVisual_chord_gene(obj, sources.use = 10, targets.use = targets_use, lab.cex = 0.75,legend.pos.y = 30, title.name = "Basal")
-#     netVisual_chord_gene(obj, sources.use = 11, targets.use = targets_use, lab.cex = 0.75,legend.pos.y = 30, title.name = "tDP")
-#     netVisual_chord_gene(obj, sources.use = 12, targets.use = targets_use, lab.cex = 0.75,legend.pos.y = 30, title.name = "RBCs")
-#     netVisual_chord_gene(obj, sources.use = 13, targets.use = targets_use, lab.cex = 0.75,legend.pos.y = 30, title.name = "LEC_LV")
-#     netVisual_chord_gene(obj, sources.use = 14, targets.use = targets_use, lab.cex = 0.75,legend.pos.y = 30, title.name = "Myofibroblasts")
-#     netVisual_chord_gene(obj, sources.use = 15, targets.use = targets_use, lab.cex = 0.75,legend.pos.y = 30, title.name = "Schwann")
-#     try(netVisual_chord_gene(obj, sources.use = 16, targets.use = targets_use, lab.cex = 0.75,legend.pos.y = 30, title.name = "Sebocytes"))
-#     
-#   dev.off()
-# }
-# 
-# #create allulvials - pre select number of patterns 
-# fn_alluvials <- function(obj, group, path){
-#   pdf(paste0(path, group, "cell_communication_patterns_outgoing.pdf"), width = 8, height = 6)
-#     # Here we run selectK to infer the number of patterns.
-#   selectK(obj, pattern = "outgoing")
-#   
-#   # Both Cophenetic and Silhouette values begin to drop suddenly when the number of outgoing patterns is 3.
-#     nPatterns = 3
-#     obj <- identifyCommunicationPatterns(obj, pattern = "outgoing", k = nPatterns)
-#   dev.off()
-#     # river plot
-#     river_gg<-netAnalysis_river(obj, pattern = "outgoing")
-#     ggsave(filename=paste0(path, group, "_outgoing_river.pdf"), plot=river_gg, width = 5, height = 4, units = 'in', dpi = 300)
-#     #> Please make sure you have load `library(ggalluvial)` when running this function
-# 
-#   pdf(paste0(path, group, "cell_communication_patterns_incoming.pdf"), width = 8, height = 6)
-#   # Here we run selectK to infer the number of patterns.
-#   selectK(obj, pattern = "incoming")
-#   
-#     nPatterns = 3
-#     obj <- identifyCommunicationPatterns(obj, pattern = "incoming", k = nPatterns)
-# 
-#   dev.off()
-#       # river plot
-#     river_gg<-netAnalysis_river(obj, pattern = "incoming")
-#     ggsave(filename=paste0(path, group, "_incoming_river.pdf"), plot=river_gg, width = 5, height = 4, units = 'in', dpi = 300)
-#     #> Please make sure you have load `library(ggalluvial)` when running this function
-# }
 
 ```
 Run cellchat for individual datasets
@@ -342,6 +263,6 @@ for(group in unique(mm2108$D_UVB)){
   rm(cellchat)
 }
    
-rm(data)
+rm(mm2108)
 
 ```

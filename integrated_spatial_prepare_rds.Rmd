@@ -1,0 +1,160 @@
+---
+title: "mm2108 Spatial"
+author: "Shoumit Dey"
+date: '01/01/2023'
+output: html_document
+---
+
+
+```{r setup,  message=FALSE}
+library(Seurat)
+library(SeuratObject)
+library(cowplot)
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(sqldf)
+library(ggpubr)
+library(reshape2)
+library(igraph)
+library(corrplot)
+library(RColorBrewer)
+
+
+#save all files and folder within your working directory or working directory/your_custom_folder_name/
+#update exp_path if you have a your_custom_folder_name within working directory 
+dir.create(paste0(getwd(), "source"))
+exp_path <- paste0(getwd(),"/source/")
+
+output_integrated <- paste0(getwd(),"/")
+
+#set pca dimensions to use and 
+#resolution for cluster identification
+res=0.3
+dims=20
+
+samples <-c("C1","C2","C3","D1","D2","D3","E1","E2","E3","F1","F2","F5")
+sample_group <-c("untreated","untreated","untreated","UVB-treated","UVB-treated","UVB-treated","untreated_Infd16","untreated_Infd16","untreated_Infd16","uvb_treated_Infd16","uvb_treated_Infd16","uvb_treated_Infd16")
+
+study_path<-paste0(getwd(),"/source/")
+
+```
+########
+Please only run the following code if you have access to the RAW 10x files
+These will be available post publication
+However, our Rds file is available to inspect/review as only_mm2108_skin_merged.Rds from https://zenodo.org/record/7638456. Please start
+with integrated_spatial_downstream.Rmd file in the repository.
+However, please do review the data integration code, thank you.
+########
+```{r loadSeurath5}
+
+seuratSpatial <- list()
+counter<-1
+for (sample in samples){
+  sample_dir <- Sys.glob(paste0(study_path,"V*/*",sample,"/"))
+  sample_path <- Sys.glob(paste0(study_path,"V*/*",sample,"/","*.h5"))
+  sample_path_file <- tail(strsplit(sample_path, split = "/")[[1]], n = 1)
+  seuratSpatial[[sample]]<-Load10X_Spatial(
+                                        sample_dir,
+                                        filename = sample_path_file,
+                                        assay = "Spatial",
+                                        slice = sample,
+                                        filter.matrix = TRUE,
+                                        to.upper = FALSE
+                                      )
+  seuratSpatial[[sample]]$orig.ident <- sample
+  seuratSpatial[[sample]]$group <- sample_group[[counter]]
+  counter<-counter+1
+}
+
+
+```
+
+```{r data_pre_processing}
+pdf(file = paste0(output_integrated, "mm2108_overall_counts.pdf"))
+  for(object in seuratSpatial){
+    plot1 <- VlnPlot(object, features = "nCount_Spatial", pt.size = 0.1) + NoLegend()
+    plot2 <- SpatialFeaturePlot(object, features = "nCount_Spatial") + theme(legend.position = "right")
+    plot3 <- SpatialFeaturePlot(object, features = "nFeature_Spatial") + theme(legend.position = "right")
+    print(wrap_plots(plot1, plot2, plot3))
+  }
+dev.off()
+
+```
+
+```{r SCTRansform & merge, warning=FALSE}
+
+
+for(sample in samples){
+  seuratSpatial[[sample]] <- SCTransform(seuratSpatial[[sample]], assay = "Spatial", verbose = FALSE, vars.to.regress = c("nCount_Spatial", "nFeature_Spatial"))
+}
+
+```
+Integrate only when looking at common signatures
+
+```{r integrate_workflow_for_spatial}
+
+features <- SelectIntegrationFeatures(object.list = seuratSpatial, nfeatures = 3000)
+seuratSpatial <- PrepSCTIntegration(object.list = seuratSpatial, anchor.features = features)
+#object_list[[paste0("cluster",cluster)]]List <- lapply(X = object_list[[paste0("cluster",cluster)]]List, FUN = RunPCA, features = features)
+
+
+immune.anchors <- FindIntegrationAnchors(object.list = seuratSpatial, normalization.method = "SCT", anchor.features = features)
+
+
+only_mm2108_skin_merged <- IntegrateData(anchorset = immune.anchors, normalization.method = "SCT")#, features.to.integrate =
+```
+
+
+```{r clustering}
+res=0.3
+dims=20
+
+only_mm2108_skin_merged <- RunPCA(only_mm2108_skin_merged, verbose = TRUE)
+ElbowPlot(only_mm2108_skin_merged)
+only_mm2108_skin_merged <- FindNeighbors(only_mm2108_skin_merged, reduction = "pca", dims = 1:dims)
+
+only_mm2108_skin_merged <- FindClusters(only_mm2108_skin_merged, verbose = FALSE, resolution = res)
+only_mm2108_skin_merged <- RunUMAP(only_mm2108_skin_merged, reduction = "pca", dims = 1:dims)
+only_mm2108_skin_merged <- RunTSNE(only_mm2108_skin_merged, reduction = "pca", dims = 1:dims)
+
+# SpatialFeaturePlot(only_mm2108_skin_merged, features = c("Cd3e","Cd4","Cd8a","Cd19","Ms4a1","Ebf1"), ncol=3)
+# 
+pdf(paste0(output_integrated, "DimPlot_PC1to",dims,"res",res,".pdf"))
+  DimPlot(only_mm2108_skin_merged, reduction = "tsne", label = TRUE) + NoLegend() 
+    DimPlot(only_mm2108_skin_merged, reduction = "umap", label = TRUE) + NoLegend()
+  
+  DimPlot(only_mm2108_skin_merged, reduction = "tsne", group.by = "orig.ident") + NoLegend() 
+    DimPlot(only_mm2108_skin_merged, reduction = "umap", group.by = "orig.ident") 
+  
+  DimPlot(only_mm2108_skin_merged, reduction = "tsne", group.by = "group") + NoLegend() 
+    DimPlot(only_mm2108_skin_merged, reduction = "umap", group.by = "group")
+  
+  DimPlot(only_mm2108_skin_merged, reduction = "tsne", split.by = "group")
+dev.off()
+#saveRDS(only_mm2108_skin_merged, paste0(output_integrated, "only_mm2108_skin_merged.rds"))
+percent_clusters <- prop.table(table(only_mm2108_skin_merged$group, only_mm2108_skin_merged$seurat_clusters), margin = 2)
+table(only_mm2108_skin_merged$group, only_mm2108_skin_merged$seurat_clusters)
+
+pdf(paste0(output_integrated, "SpatialDimPlot_PC1to",dims,"res",res,".pdf"))
+  x<-SpatialDimPlot(only_mm2108_skin_merged, image.alpha = 0)
+  y<-SpatialDimPlot(only_mm2108_skin_merged, alpha = c(0.4, 0.4))
+
+  for(i in 1:length(samples)){
+    fig1<-x[[i]]
+    #print(ggarrange(fig1,fig2, ncol = 1))
+    print(fig1)
+  }
+  for(i in 1:length(samples)){
+    fig2<-y[[i]]
+    #print(ggarrange(fig1,fig2, ncol = 1))
+    print(fig2)
+  }
+  
+  rm(x, y)
+dev.off()  
+
+only_mm2108_skin_merged$group <- factor(only_mm2108_skin_merged$group, levels = c("untreated","UVB-treated","untreated_Infd16","uvb_treated_Infd16"))
+
+saveRDS(only_mm2108_skin_merged, paste0(output_integrated, "only_mm2108_skin_merged.Rds"))
+```

@@ -1,7 +1,7 @@
  ---
 title: "MM21.08"
 author: "Shoumit Dey"
-date: "28/09/2021"
+date: "01/01/2023"
 output: html_document
 ---
 1. Load packages
@@ -13,12 +13,11 @@ library(SeuratObject)
 library(cowplot)
 library(dplyr)
 library(ggplot2)
-library(AUCell)
 library(stringr)
 library(sqldf)
-library(GSEABase)
 library(ggpubr)
 library(reshape2)
+library(stringr)
 
 #save all files and folder within your working directory or working directory/your_custom_folder_name/
 #update output_integrated if you have a your_custom_folder_name within working directory 
@@ -26,15 +25,20 @@ output_integrated <- paste0(getwd(),"/")
 
 #set pca dimensions to use and 
 #resolution for cluster identification
-#do not change if already integrated
-#or change only if multiple rds exist
 dims=15
 res=0.4
 
+#create sub-directories
+dir.create(paste0(output_integrated, "group_comparisons"))
+dir.create(paste0(output_integrated, "markers"))
+dir.create(paste0(output_integrated, "phenotyping"))
+dir.create(paste0(output_integrated, "low_dim_visual"))
+dir.create(paste0(output_integrated, "final_figures"))
 ```
-
+#################################################################
 Load data and create Seurat Objects - all groups and all samples
-
+Download Rds file from from 10.5281/zenodo.7638456
+#################################################################
 ```{r start_here_if_already_integrated}
 
 input_string <- paste0(output_integrated, "integrated_mm2108_","dims",dims,"_res",res,".rds")
@@ -116,6 +120,7 @@ PLEASE NOTE:
 ###fig4b: Refers to +UVB Vs -UVB which forms roughly half of FIGURE 4 and S6 in the manuscript
 ###fig5a: Refers to +UVB; L.donovani Vs +UVB versus uninfected +UVB" which forms roughly half of FIGURE 5 and S7 in the manuscript
 ###fig5b: Refers to +UVB; L.donovani Vs -UVB; L.donovani which forms roughly half of FIGURE 5 and S7 in the manuscript
+The section below will take approximately 15-20 minutes to run on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
 ```{r sub-cluster + sub-set to compare}
 ###the following lines of code achieves two objectives
 ####1. Sub-clusters and saves RDS for each of the imputed cell types
@@ -130,7 +135,7 @@ subclust_dims <- 15
 
 figures<-c("fig4a","fig4b","fig5a","fig5b")
 
-comparisons<-List()
+comparisons<-list()
 comparisons[["fig4a"]]<-"Untd/INF_Untd/d0"
 comparisons[["fig4b"]]<-"UVB/d0_Untd/d0"
 comparisons[["fig5a"]]<-"UVB/INF_UVB/d0"
@@ -221,10 +226,10 @@ for(celltype in unique(unlist(seuratObj$CellTypeM))){
 ```
 #################################################################################################################################
 The following code prints four comparisons calculated in the above chunk and forms the following figures in the manuscript
-FIGURE S6B: -UVB; L.donovani Vs -UVB
-FIGURE S6C: +UVB Versus -UVB
-FIGURE S7A: +UVB; L.donovani Vs +UVB
-FIGURE S7C: +UVB; L.donovani Vs -UVB; L.donovani
+FIGURE S4B: -UVB; L.donovani Vs -UVB
+FIGURE S4C: +UVB Versus -UVB
+FIGURE S5A: +UVB; L.donovani Vs +UVB
+FIGURE S5C: +UVB; L.donovani Vs -UVB; L.donovani
 #################################################################################################################################
 ```{r top_genes_figure}
 cell_colours <- c("#CD9600","#E68613","#00BE67","#00C19A","#00BFC4","#00B8E7","#00A9FF","#8494FF","#ABA300","#7CAE00","#0CB702","#C77CFF","#ED68ED","#FF61CC","#FF68A1","#F8766D")
@@ -350,6 +355,8 @@ The following code saves proportions of cell types in the four comparisons in th
 +UVB Versus -UVB
 +UVB; L.donovani Vs +UVB
 +UVB; L.donovani Vs -UVB; L.donovani
+
+#Use this as raw data for main Figure 4a and main figure 5a
 #################################################################################################################################
 ```{r save proportions}
 DefaultAssay(seuratObj)<-"SCT"
@@ -391,12 +398,12 @@ write.csv(proportion_by_sample, paste0(output_integrated, "group_comparisons/fig
 rm(seuratfig5b)
 ############################+UVB; L.donovani Vs -UVB; L.donovani-End################################################
 ```
-##############################
-FIGURES S6A, S8, 6D
-##############################
+###########################################
+FIGURES Supp. 4a, Supp. 6a, Main Figure 6d
+###########################################
 ```{r bits_for_figures}
 
-###############################Figure S6A split DimPlot##############################
+###############################Figure S4A split DimPlot##############################
 final_figure_bits <- paste0(output_integrated, "/final_figures/")
 seuratObj <- SetIdent(seuratObj, value="CellTypeM")
 celltypes <- c("Mac", "T_NK", "FI","FII", "FIII", "FIV","FV", "FVI","Basal", "EndoI", "Myofibroblasts","tDP","LEC_LV","Sebocytes","Schwann","RBCs")
@@ -407,7 +414,7 @@ DimPlot(seuratObj, split.by = "D_UVB", label = TRUE, cols = cell_colours) + NoLe
 ggsave(paste0(final_figure_bits, "fig4S_group.pdf"), width = 12, height = 5, limitsize = FALSE)
 ###############################end##############################
 
-################################FIGURE S8###############################
+################################FIGURE S6a###############################
 group_colours <- c("white", "red","grey", "blue")
 save_path_new_fig_4S2_stack <- paste0(output_integrated, "/final_figures/")
 pdpn_plot <- VlnPlot(seuratObj, features = "Pdpn", split.by = "D_UVB", group.by = "CellTypeM" , cols = group_colours) +ylab(label = "expression") + xlab(label = "") + ggtitle(label = "Pdpn across all cells and groups)")
@@ -467,40 +474,42 @@ save_path_new_fig_6_stack <- paste0(output_integrated, "/final_figures/")
 #STACKED Violin Chart######################################################################
 ######################FIGURE 6D############################################################################
 CellChat::StackedVlnPlot(obj = seuratObj, features=features_to_plot,split.by = "D_UVB", color.use = group_colours, angle = 45, pt.size = 0.0, line.size = 0.01, same.y.lims = TRUE)
-ggsave(paste0(save_path_new_fig_6_stack, "fig4b_vln_stack.pdf"), width = 15, height = 8, limitsize = FALSE)
+ggsave(paste0(save_path_new_fig_6_stack, "fig6d_vln_stack.pdf"), width = 15, height = 8, limitsize = FALSE)
 ###########################################################################################
 ###########################################################################################
 
 ```
 ##############################
-Figure 5C&D T_NK sub cluster
+Main figure 5c & d T_NK sub cluster
+Feature plot for main Figure 7d
+Data for main figure 5g CD4/CD8
 ##############################
 ```{r T cells}
 save_path_T_spec <- paste0(output_integrated, "/group_comparisons/T_NK/")
-####################Figure 5D T_NK sub cluster#############################################################
+####################Figure 5d T_NK sub cluster#############################################################
 ###########################################################################################################
 DimPlot(tcells, group.by = "SubCellTypeM", label = TRUE, label.size = 7) + NoLegend() + ggtitle(label = "") 
-ggsave(paste0(save_path_T_spec, "new_fig4a_t_nk_dim.pdf"), width = 8, height = 6, limitsize = FALSE)
+ggsave(paste0(save_path_T_spec, "new_fig5d_t_nk_dim.pdf"), width = 8, height = 6, limitsize = FALSE)
 ####################Figure 5C T_NK sub cluster#############################################################
 ###########################################################################################################
 DotPlot(tcells, features = c("Odc1","Ifng","Irf8","Ctla2a","Hmgb2","Il5","Mcpt4"
 ), group.by = "seurat_clusters", cols = c("grey","red")) + RotatedAxis()
-ggsave(paste0(save_path_T_spec, "fig5a_dot.pdf"), width = 8, height = 3.5, limitsize = FALSE)
+ggsave(paste0(save_path_T_spec, "fig5c_dot.pdf"), width = 8, height = 3.5, limitsize = FALSE)
 
-#figure9
-t_cd34 <- VlnPlot(tcells, features = c("Cd34"), split.by = "D_UVB", cols = group_colours) + NoLegend() +ylab(label = "expression") + xlab(label = "") + ggtitle(label = "Cd34 (T cells)")
-t_selplg <- VlnPlot(tcells, features = c("Selplg"), split.by = "D_UVB", cols = group_colours) + NoLegend() +ylab(label = "expression") + xlab(label = "") + ggtitle(label = "Selplg (T cells)")
-t_cd34 + t_selplg
-
+# t_cd34 <- VlnPlot(tcells, features = c("Cd34"), split.by = "D_UVB", cols = group_colours) + NoLegend() +ylab(label = "expression") + xlab(label = "") + ggtitle(label = "Cd34 (T cells)")
+# t_selplg <- VlnPlot(tcells, features = c("Selplg"), split.by = "D_UVB", cols = group_colours) + NoLegend() +ylab(label = "expression") + xlab(label = "") + ggtitle(label = "Selplg (T cells)")
+# t_cd34 + t_selplg
+#################################
+#Feature plot for main Figure 7d
 t_itgb2 <- VlnPlot(tcells, features = "Itgb2", split.by = "D_UVB", cols = group_colours) + NoLegend() +ylab(label = "expression") + xlab(label = "") + ggtitle(label = "Itgb2 (T cells)")
 tfeature_itgb2 <- FeaturePlot(tcells, features = c("Itgb2")) + NoLegend() + ggtitle(label = "")
 t_itgb2+tfeature_itgb2
 
 
-FeaturePlot(tcells, features = c("Ccl5","Ccr5"), blend = TRUE, blend.threshold = 0.5)
-ggsave(paste0(save_path_T_spec, "fig5a_supplement_coexp.pdf"), width = 8, height = 6, limitsize = FALSE)
+# FeaturePlot(tcells, features = c("Ccl5","Ccr5"), blend = TRUE, blend.threshold = 0.5)
+# ggsave(paste0(save_path_T_spec, "fig5a_supplement_coexp.pdf"), width = 8, height = 6, limitsize = FALSE)
 
-##################Data for Figure 5G CD4/CD8######################################
+##################Data for Figure 5g CD4/CD8######################################
 ##################################################################################
 tcells <- SetIdent(tcells, value = "seurat_clusters")
 th1_tcells <- subset(tcells, idents = "1")
@@ -515,7 +524,8 @@ cd8_pos_tcells
 ##################################################################################
 ```
 ##############################
-Figure 5C&D Mac sub cluster
+Figure 5c & d Mac sub cluster
+Feature plot for main Figure 7d
 ##############################
 ```{r Macs}
 
@@ -523,17 +533,18 @@ save_path_mac_spec <- paste0(output_integrated, "/group_comparisons/Mac/")
 ####################Figure 5D Mac sub cluster##############################################################
 ###########################################################################################################
 DimPlot(macs, group.by = "SubCellTypeM", label = TRUE, label.size = 4) + NoLegend() + ggtitle(label = "") 
-ggsave(paste0(save_path_mac_spec, "new_fig4a_mac_dim.pdf"), width = 8, height = 6, limitsize = FALSE)
+ggsave(paste0(save_path_mac_spec, "new_fig5d_mac_dim.pdf"), width = 8, height = 6, limitsize = FALSE)
 ####################Figure 5C Mac sub cluster##############################################################
 ###########################################################################################################
 DotPlot(macs, features = c("Lyz1","Plac8","Apoe","Cd209a","Cst3","Hist1h2ap","S100a9","Ctla2a"
 ), group.by = "seurat_clusters", cols = c("grey","red")) + RotatedAxis()
-ggsave(paste0(save_path_mac_spec, "fig5a_dot.pdf"), width = 8, height = 3.5, limitsize = FALSE)
+ggsave(paste0(save_path_mac_spec, "fig5c_dot.pdf"), width = 8, height = 3.5, limitsize = FALSE)
 
-macs_cd34 <- VlnPlot(macs, features = c("Cd34"), split.by = "D_UVB", cols = c("grey90")) + NoLegend() +ylab(label = "expression") + xlab(label = "") + ggtitle(label = "Cd34 (Macs)")
-macs_selplg <- VlnPlot(macs, features = c("Selplg"), split.by = "D_UVB", cols = c("grey90")) + NoLegend() +ylab(label = "expression") + xlab(label = "") + ggtitle(label = "Selplg (Macs)")
-macs_cd34 + macs_selplg
-
+# macs_cd34 <- VlnPlot(macs, features = c("Cd34"), split.by = "D_UVB", cols = c("grey90")) + NoLegend() +ylab(label = "expression") + xlab(label = "") + ggtitle(label = "Cd34 (Macs)")
+# macs_selplg <- VlnPlot(macs, features = c("Selplg"), split.by = "D_UVB", cols = c("grey90")) + NoLegend() +ylab(label = "expression") + xlab(label = "") + ggtitle(label = "Selplg (Macs)")
+# macs_cd34 + macs_selplg
+#################################
+#Feature plot for main Figure 7d
 macs_itgb2 <- VlnPlot(macs, features = "Itgb2", split.by = "D_UVB", cols = c("grey90")) + NoLegend() +ylab(label = "expression") + xlab(label = "") + ggtitle(label = "Itgb2 (Macs)")
 macsfeature_itgb2 <- FeaturePlot(macs, features = c("Itgb2"))+ NoLegend()  + ggtitle(label = "Itgb2 (Macs)")
 macs_itgb2+macsfeature_itgb2
