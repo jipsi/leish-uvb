@@ -1,18 +1,36 @@
 # Project: leish-uvb (instructions)
+## Code to replicate the figures in the manuscript (please note the following instructions)
 
-<details><summary>Software requirements</summary>
-<p>
+### OS
+Windows: Windows 10 x64
+Mac
+Linux
 
-#### We can hide anything, even code!
+### Software requirements
 
-```ruby
-   puts "Hello World"
-```
+#### 1. R version 4.2.2
+#### 2. Packages required - see session information below
 
-</p>
-</details>
+> sessionInfo()
+R version 4.2.2 (2022-10-31 ucrt)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 19045)
 
-- Please maintain folder structure as per the repository
+Matrix products: default
+
+locale:
+[1] LC_COLLATE=English_United Kingdom.utf8  LC_CTYPE=English_United Kingdom.utf8    LC_MONETARY=English_United Kingdom.utf8
+[4] LC_NUMERIC=C                            LC_TIME=English_United Kingdom.utf8    
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] reshape2_1.4.4     ggpubr_0.5.0       sqldf_0.4-11       RSQLite_2.2.20     gsubfn_0.7         proto_1.0.0        stringr_1.5.0     
+ [8] ggplot2_3.4.0      dplyr_1.0.10       cowplot_1.1.1      SeuratObject_4.1.3 Seurat_4.3.0 
+
+
+#### 1. Please maintain folder structure as per the repository
 
 #### Option1 : Start from scratch using raw 10x files (available post publication)
 - Download all samples/10x files from GSMXXXX into source/'sample_name'/
@@ -24,9 +42,6 @@
 
 #### For figures relating to ligand-receptor interactions using cellchat, please start with cellchat.Rmd
 
-
-Code to replicate the figures in the manuscript - https://www.biorxiv.org/content/10.1101/2023.02.03.526940v1
-
 ## UVB light exposure drives effector T cell responses and modifies skin stromal-immune crosstalk during L. donovani infection (unpublished)
 
 Marcela Montes de Oca1#, Shoumit Dey1#, Katrien Van Bocxlaer1, Helen Ashwin1, Najmeeyah Brown1, Elmarie Myburgh1, Nidhi S Dey1, Gulab F Rani1, Edward Muscutt1, Mohamed Osman1, Damian Perez-Mazliah1, Sally James2, Lesley Gilbert2, Mitali Chatterjee3 and Paul M Kaye1
@@ -36,7 +51,7 @@ Marcela Montes de Oca1#, Shoumit Dey1#, Katrien Van Bocxlaer1, Helen Ashwin1, Na
 3 Dept. of Pharmacology, Institute of Postgraduate Medical Education & Research, Kolkata, 700 020, India
 '#' These authors contributed equally.
 
-#### Currently available as a pre-print on bioRxiv: 
+#### Currently available as a pre-print on bioRxiv:  https://www.biorxiv.org/content/10.1101/2023.02.03.526940v1
 
 ### Background: 
 The steady state balance between stromal and immune cells can be perturbed by environmental stimuli such as UVB light. Little is known about how UVB changes stromal-immune cell cross talk during skin infection.  
