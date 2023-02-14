@@ -1,40 +1,50 @@
 ---
 title: "MM21.08"
 author: "Shoumit Dey"
-date: "28/09/2021"
+date: "01/01/2023"
 output: html_document
 ---
 1. Load packages
 2. Set paths
-```{r setup}
+```{r setup, message=FALSE}
 #Load packages
 library(Seurat)
 library(SeuratObject)
 library(cowplot)
 library(dplyr)
 library(ggplot2)
-library(AUCell)
 library(stringr)
 library(sqldf)
-library(GSEABase)
 library(ggpubr)
+library(reshape2)
 
 #save all files and folder within your working directory or working directory/your_custom_folder_name/
 #update exp_path if you have a your_custom_folder_name within working directory 
+dir.create(paste0(getwd(), "source"))
 exp_path <- paste0(getwd(),"/source/")
 
-output_integrated <- getwd()
+output_integrated <- paste0(getwd(),"/")
 
 #set pca dimensions to use and 
 #resolution for cluster identification
 dims=15
 res=0.4
 
+#create sub-directories
+dir.create(paste0(output_integrated, "group_comparisons"))
+dir.create(paste0(output_integrated, "markers"))
+dir.create(paste0(output_integrated, "phenotyping"))
+
+
 ```
 
 Load data and create Seurat Objects - all groups and all samples
 
 ```{r load_seurat, message=TRUE}
+#######DO NOT RUN IF THE FOLLOWING IS NOT IN PLACE##############
+# Please make sure each of the individual sample RAW matrix, genes and barcodes files
+# are available under exp_path 
+
 # load and QC
 lstConditions <- c("Untd/d0","UVB/d0","Untd/INF","UVB/INF")
 lstSamples <- c("MC2","MD2","ME2","MF2")
@@ -186,4 +196,3 @@ saveRDS(integrated_sctransformed,output_string)
 rm(output_string)
 
 ```
-
