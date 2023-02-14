@@ -11,7 +11,7 @@
 
 #### 1. R version 4.2.2
 #### 2. RStudio 2022.02.3+492 (Optional)
-#### 3. Package versioning required - see session information below
+#### 3. Package versioning required - see session information below; attached as sessionInfo() of attached packages
 
 > sessionInfo()
 > R version 4.2.2 (2022-10-31 ucrt)
@@ -21,29 +21,29 @@
 > Matrix products: default
 > 
 > locale:
-> [1] LC_COLLATE=English_United Kingdom.utf8  LC_CTYPE=English_United Kingdom.utf8    LC_MONETARY=English_United Kingdom.utf8
-> [4] LC_NUMERIC=C                            LC_TIME=English_United Kingdom.utf8    
+> [1] LC_COLLATE=English_United Kingdom.utf8  LC_CTYPE=English_United Kingdom.utf8   
+> [3] LC_MONETARY=English_United Kingdom.utf8 LC_NUMERIC=C                           
+> [5] LC_TIME=English_United Kingdom.utf8    
 > 
 > attached base packages:
 > [1] stats     graphics  grDevices utils     datasets  methods   base     
 > 
 > other attached packages:
->  [1] reshape2_1.4.4     ggpubr_0.5.0       sqldf_0.4-11       RSQLite_2.2.20     gsubfn_0.7         proto_1.0.0        stringr_1.5.0     
->  [8] ggplot2_3.4.0      dplyr_1.0.10       cowplot_1.1.1      SeuratObject_4.1.3 Seurat_4.3.0 
+>  [1] corrplot_0.92       wordcloud_2.6       RColorBrewer_1.1-3  ggalluvial_0.12.3  
+>  [5] NMF_0.25            cluster_2.1.4       rngtools_1.5.2      registry_0.5-1     
+>  [9] patchwork_1.1.2     CellChat_1.6.1      Biobase_2.58.0      BiocGenerics_0.44.0
+> [13] igraph_1.3.5        reshape2_1.4.4      ggpubr_0.5.0        sqldf_0.4-11       
+> [17] RSQLite_2.2.20      gsubfn_0.7          proto_1.0.0         stringr_1.5.0      
+> [21] ggplot2_3.4.0       dplyr_1.0.10        cowplot_1.1.1       SeuratObject_4.1.3 
+> [25] Seurat_4.3.0 
 
-#### 3. Additional packages required for spatial analysis, cellchat (https://github.com/sqjin/CellChat) and preparing data for cell2location (https://cell2location.readthedocs.io/en/latest/)
-Reported as sessionInfo()
-> other attached packages:
-> [1] wordcloud_2.6       RColorBrewer_1.1-3  ggalluvial_0.12.3   NMF_0.25            cluster_2.1.4       rngtools_1.5.2      registry_0.5-1        stringr_1.5.0      
-> [9] SeuratObject_4.1.3  Seurat_4.3.0        patchwork_1.1.2     CellChat_1.6.1      Biobase_2.58.0      BiocGenerics_0.44.0 ggplot2_3.4.0        igraph_1.3.5       
-> [17] dplyr_1.0.10  
-#### 4. RUNNING TIME: All R files run sequentially will take approximately 1.5 hours to run on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
+#### 3. RUNNING TIME: All R files run sequentially will take approximately 1.5 hours to run on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
 
 ## Code to replicate the figures in the manuscript (please note the following instructions)
 
-#### 1. Code will attempt to create folder structure as showing in the repository. Please maintain folder structure as per the repository for the plots/Rds files to save in the correct folders. Download all Rds files from https://zenodo.org/record/7638456 to your working folder as mentioned in each step.
+#### 1. Code will attempt to create folder structure as shown in the repository. Please maintain folder structure as per the repository for the plots/Rds files to save in the correct folders. When running again please delete the folders such that they are re-created. Download all Rds files from https://zenodo.org/record/7638456 to your working folder as further mentioned in the following steps.
 
-#### 2. To see how the data is integrated please look at integrated_prepare_rds.Rmd. However the raw data will be made available upon publication but please use the Rds file link below to load the integrated data for inspection, analysis or re-creating figures in <u>'Option 2'</u> below
+#### 2. To see how the data is integrated please look at integrated_prepare_rds.Rmd. However the raw data will be made available upon publication but please use <b>'Option 2'</b> below and the rds file link below to load the integrated data for inspection, analysis or re-creating figures. 
 
 ##### Option1 : Start from scratch using raw 10x files (available post publication)
 - Download all samples/10x files from GSMXXXX into source/'sample_name'/
@@ -54,7 +54,7 @@ Reported as sessionInfo()
 - Start with integrated_downstream.Rmd
 - This file will take approximately 25-30 minutes to run from start to finish on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
 
-#### 3. For spatial data: To see how the data is integrated please look at integrated_spatial_prepare_rds.Rmd. However the raw data will be made available upon publication but please use <u>'Option 2'</u> using the Rds file (link below) to load the integrated data for inspection, analysis or re-creating figures in  below.
+#### 3. For spatial data: To see how the data is integrated please look at integrated_spatial_prepare_rds.Rmd. However the raw data will be made available upon publication but please use <b>'Option 2'</b> using the Rds file (link below) to load the integrated data for inspection, analysis or re-creating figures in  below.
 
 ##### Option1 : Start from scratch using raw 10x files (available post publication)
 - Download all samples/10x files from GSMXXXX into source/'Visium_slide_name'/
@@ -66,7 +66,7 @@ Reported as sessionInfo()
 - Start with integrated_spatial_cell2location.Rmd
 - This file will take approximately 5-10 minutes to run from start to finish on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
 
-#### 4. For figures relating to ligand-receptor interactions using cellchat, please start with cellchat.Rmd. 
+#### 4. For figures relating to ligand-receptor interactions using [cellchat](https://github.com/sqjin/CellChat), please start with cellchat.Rmd. 
 - Please follow the instructions in the code, most importantly after setting up folders and loading libraries please make sure the following Rds files are stored in the respective folders
 - cellchat_Untd_d0.rds
 - cellchat_Untd_INF.rds
@@ -105,7 +105,11 @@ Reported as sessionInfo()
 > python config.py
 > 
 > source deactivate
-- Python code used is available in the repository. Running this will require RAW data which will be available on publication. For a demo we have provided one Visium sample (...) and our single cell dataset in 'diet' anndata format here: https://zenodo.org/record/7638456
+- Python code used is available in the repository. Running this will require RAW data which will be available on publication. For a demo we have provided one Visium sample (62_E2.zip) and our single cell dataset in 'diet' anndata format (sc_source.h5ad) here: https://zenodo.org/record/7638456. Please download both files to your working directory.
+- Download sd22.5.3.csv for sample names onto your working directory 
+- Next execute config.py within cell2location environment. This file sequentially call train_ref.py, load_query.py and finally deconvolute.py which will store the cell abundance prediction as a metadata as an anndata object (see below):
+>  adata_vis.obs[adata_vis.uns['mod']['factor_names']] = adata_vis.obsm['q05_cell_abundance_w_sf']
+
 
 ## UVB modifies skin immune-stroma cross-talk and promotes effector T cell recruitment during cryptic Leishmania donovani infection 
 
