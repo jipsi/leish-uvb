@@ -1,7 +1,20 @@
 # Project: leish-uvb (instructions)
+
+<details><summary>Software requirements</summary>
+<p>
+
+#### We can hide anything, even code!
+
+```ruby
+   puts "Hello World"
+```
+
+</p>
+</details>
+
 - Please maintain folder structure as per the repository
 
-#### Option1 : Start from scratch using raw 10x files
+#### Option1 : Start from scratch using raw 10x files (available post publication)
 - Download all samples/10x files from GSMXXXX into source/'sample_name'/
 - Start with integrated_prepare_rds.Rmd
 
@@ -12,7 +25,7 @@
 #### For figures relating to ligand-receptor interactions using cellchat, please start with cellchat.Rmd
 
 
-Code to replicate the figures in the manuscript - 
+Code to replicate the figures in the manuscript - https://www.biorxiv.org/content/10.1101/2023.02.03.526940v1
 
 ## UVB light exposure drives effector T cell responses and modifies skin stromal-immune crosstalk during L. donovani infection (unpublished)
 
@@ -22,6 +35,8 @@ Marcela Montes de Oca1#, Shoumit Dey1#, Katrien Van Bocxlaer1, Helen Ashwin1, Na
 2 Genomics Laboratory, Bioscience Technology Facility, University of York, Heslington, YO10 5DD, York, UK
 3 Dept. of Pharmacology, Institute of Postgraduate Medical Education & Research, Kolkata, 700 020, India
 '#' These authors contributed equally.
+
+#### Currently available as a pre-print on bioRxiv: 
 
 ### Background: 
 The steady state balance between stromal and immune cells can be perturbed by environmental stimuli such as UVB light. Little is known about how UVB changes stromal-immune cell cross talk during skin infection.  
