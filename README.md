@@ -32,6 +32,11 @@
 >  [8] ggplot2_3.4.0      dplyr_1.0.10       cowplot_1.1.1      SeuratObject_4.1.3 Seurat_4.3.0 
 
 #### 3. Additional packages required for spatial analysis, cellchat (https://github.com/sqjin/CellChat) and preparing data for cell2location (https://cell2location.readthedocs.io/en/latest/)
+Reported as sessionInfo()
+> other attached packages:
+> [1] wordcloud_2.6       RColorBrewer_1.1-3  ggalluvial_0.12.3   NMF_0.25            cluster_2.1.4       rngtools_1.5.2      registry_0.5-1        stringr_1.5.0      
+> [9] SeuratObject_4.1.3  Seurat_4.3.0        patchwork_1.1.2     CellChat_1.6.1      Biobase_2.58.0      BiocGenerics_0.44.0 ggplot2_3.4.0        igraph_1.3.5       
+> [17] dplyr_1.0.10  
 #### 4. Packages required - see session information below
 
 ## Code to replicate the figures in the manuscript (please note the following instructions)
@@ -50,11 +55,7 @@
 
 #### 3. For spatial data
 
-#### 4. For figures relating to ligand-receptor interactions using cellchat, please start with cellchat.Rmd. Additional packages reported as sessionInfo()
-> other attached packages:
-> [1] wordcloud_2.6       RColorBrewer_1.1-3  ggalluvial_0.12.3   NMF_0.25            cluster_2.1.4       rngtools_1.5.2      registry_0.5-1       > stringr_1.5.0      
-> [9] SeuratObject_4.1.3  Seurat_4.3.0        patchwork_1.1.2     CellChat_1.6.1      Biobase_2.58.0      BiocGenerics_0.44.0 ggplot2_3.4.0       > igraph_1.3.5       
-> [17] dplyr_1.0.10  
+#### 4. For figures relating to ligand-receptor interactions using cellchat, please start with cellchat.Rmd. 
 
 ## UVB modifies skin immune-stroma cross-talk and promotes effector T cell recruitment during cryptic Leishmania donovani infection 
 
