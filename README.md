@@ -1,12 +1,12 @@
 # Project: leish-uvb (instructions)
-## Code to replicate the figures in the manuscript (please note the following instructions)
+## Software requirements: 
 
 ### OS
-Windows: Windows 10 x64
+Windows: Windows 10 x64 (For all R based code)
 Mac
-Linux
+Linux: CentOS Linux 7 Core (For all Python scripts running cell2location)
 
-### Software requirements
+### Software 
 
 #### 1. R version 4.2.2
 #### 2. Packages required - see session information below
@@ -29,6 +29,10 @@ Linux
 >  [1] reshape2_1.4.4     ggpubr_0.5.0       sqldf_0.4-11       RSQLite_2.2.20     gsubfn_0.7         proto_1.0.0        stringr_1.5.0     
 >  [8] ggplot2_3.4.0      dplyr_1.0.10       cowplot_1.1.1      SeuratObject_4.1.3 Seurat_4.3.0 
 
+#### 3. Additional packages required for spatial analysis, cellchat and preparing data for cell2location
+#### 4. Packages required - see session information below
+
+## Code to replicate the figures in the manuscript (please note the following instructions)
 
 #### 1. Please maintain folder structure as per the repository
 
@@ -42,9 +46,9 @@ Linux
 
 #### For figures relating to ligand-receptor interactions using cellchat, please start with cellchat.Rmd
 
-## UVB light exposure drives effector T cell responses and modifies skin stromal-immune crosstalk during L. donovani infection (unpublished)
+## UVB modifies skin immune-stroma cross-talk and promotes effector T cell recruitment during cryptic Leishmania donovani infection 
 
-Marcela Montes de Oca1#, Shoumit Dey1#, Katrien Van Bocxlaer1, Helen Ashwin1, Najmeeyah Brown1, Elmarie Myburgh1, Nidhi S Dey1, Gulab F Rani1, Edward Muscutt1, Mohamed Osman1, Damian Perez-Mazliah1, Sally James2, Lesley Gilbert2, Mitali Chatterjee3 and Paul M Kaye1
+Marcela Montes de Oca^1#^, Shoumit Dey^1#^, Katrien Van Bocxlaer^1^, Helen Ashwin^1^, Najmeeyah Brown^1^, Elmarie Myburgh^1^, Nidhi S Dey^1^, Gulab F Rani^1^, Edward Muscutt^1^, Mohamed Osman^1^, Damian Perez-Mazliah^1^, Sally James^2^, Lesley Gilbert^2^, Mitali Chatterjee^3^ and Paul M Kaye^1^
 
 1 York Biomedical Research Institute, University of York, Heslington, YO10 5DD, York, UK
 2 Genomics Laboratory, Bioscience Technology Facility, University of York, Heslington, YO10 5DD, York, UK
@@ -53,14 +57,5 @@ Marcela Montes de Oca1#, Shoumit Dey1#, Katrien Van Bocxlaer1, Helen Ashwin1, Na
 
 #### Currently available as a pre-print on bioRxiv:  https://www.biorxiv.org/content/10.1101/2023.02.03.526940v1
 
-### Background: 
-The steady state balance between stromal and immune cells can be perturbed by environmental stimuli such as UVB light. Little is known about how UVB changes stromal-immune cell cross talk during skin infection.  
-
-### Methods: 
-We used a novel murine model of Leishmania donovani infection whereby mice are pre-conditioned and maintained with minimally-erythematous UVB exposure. We used flow cytometry, single-cell RNA sequencing and spatial transcriptomics to examine skin cell phenotype before and after UVB exposure, infection or a combination of both. We further used ligand-receptor databases and computational tools to interpret pathways of cellular cross-talk. 
-
-### Results: 
-We report a cell atlas of C57BL/6 mouse skin following UVB exposure, L. donovani infection and the combination of both. We characterise single cells (FACS and scRNA-seq) and predict spatial location using the 10X Genomics Visium platform. We identify phenotypic differences between groups to show that under conventional conditions (non-UVB exposed) Ccl2 transcripts are globally upregulated and CD45-Ter119-CD31-PDPN+ stromal cells increase in abundance in skin of mice infected with L. donovani. UVB exposure alone induces changes to gene signatures associated with metabolic change, notably upregulation of oxidative phosphorylation in macrophages, T cells and fibroblasts. UVB exposure alters immune cell profile of infected mice, with an increase in the abundance of Ifng+ T cells and a shift in predicted pathways of intercellular communication.  In infected, non-UVB exposed mice, the Cd34–Selp pathway was predicted to be the dominant route of communication between fibroblasts, T cells and endothelial cells. However, in UVB-exposed infected mice, this was replaced by Itgb2-Icam2 signalling, with heightened expression of Itgb2 on Ifng+ T cells. 
-
-### Conclusion: 
-We show that UVB exposure can significantly modify the cellular landscape and mode of intercellular communication in the skin during L. donovani infection. Our data exemplify the potential importance of including UVB pre-exposure in translational models of cutaneous infection.
+### Summary: 
+Many parasites of significant public health importance assume skin residency without causing overt pathology. How immune and stromal cells respond to such “cryptic” infections and how exposure to UVB alters such responses in poorly understood. We combined scRNA-seq, spatial transcriptomics and inferential network analysis to address these questions in a model of cryptic skin infection by Leishmania donovani. In infected C57BL/6 mice, p-selectin and CXCL12 interactions dominate intercellular communication between leucocytes, fibroblast and endothelial cells, but effector T cell function remains muted. Following UVB exposure, increased numbers of IFNγ+ CD4+ Th1 cells and NK cells enter the skin, communicating with stromal cells via CCL5-CCR5 and LFA-1-ICAM1/2. However, spatial mapping indicated that Th1 cells and macrophages occupied distinct niches after UVB exposure, likely limiting effector function. Our data provide the first holistic view of the immune landscape during cryptic L. donovani infection and demonstrate how UVB exposure fundamentally reshapes this response.
