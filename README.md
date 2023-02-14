@@ -53,9 +53,9 @@ Many parasites of significant public health importance assume skin residency wit
 
 #### 3. RUNNING TIME: All R files run sequentially will take approximately 1.5 hours to run on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
 
-## Code to replicate the figures in the manuscript (please note the following instructions)
+## Code to review/analyse the data and/or to replicate the figures in the manuscript 
 
-#### 1. Code will attempt to create folder structure as shown in the repository. Please maintain folder structure as per the repository for the plots/Rds files to save in the correct folders. When running again please delete the folders such that they are re-created. Download all Rds files from https://zenodo.org/record/7638456 to your working folder as further mentioned in the following steps.
+#### 1. Code will attempt to create folder structure as shown in the repository. Please maintain folder structure as per the repository for the plots/Rds files to save in the correct folders (there is no need to create these folders manually). Download all Rds files from https://zenodo.org/record/7638456 to your working folder as further mentioned in the following steps.
 
 #### 2. To see how the data is integrated please look at integrated_prepare_rds.Rmd. However the raw data will be made available upon publication but please use <b>'Option 2'</b> below and the rds file link below to load the integrated data for inspection, analysis or re-creating figures. 
 
@@ -125,7 +125,6 @@ Many parasites of significant public health importance assume skin residency wit
 - Next execute config.py within cell2location environment. This file sequentially call train_ref.py, load_query.py and finally deconvolute.py which will store the cell abundance prediction as a metadata as an anndata object (see below):
 >  adata_vis.obs[adata_vis.uns['mod']['factor_names']] = adata_vis.obsm['q05_cell_abundance_w_sf']
 - You can write this as a CSV file to explore abundances further.
-
 
 ## License
 
