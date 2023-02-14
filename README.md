@@ -65,6 +65,7 @@ Many parasites of significant public health importance assume skin residency wit
 
 ##### Option2 : Start from prepared Rds containing primary clustering analysis
 - Download Rds integrated_mm2108_dims15_res0.4.rds (Single cell RNA seq) from https://zenodo.org/record/7638456 into your working directory
+- Download CSV files t_cell_barcodes.csv, sub_clust_tcells.csv, sub_clust_lec.csv, sub_clust_endo.csv and sub_clust_macs.csv from the repository to your working directory
 - Start with integrated_downstream.Rmd
 - This file will take approximately 25-30 minutes to run from start to finish on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
 
@@ -123,6 +124,7 @@ Many parasites of significant public health importance assume skin residency wit
 - Download sd22.5.3.csv for sample names onto your working directory 
 - Next execute config.py within cell2location environment. This file sequentially call train_ref.py, load_query.py and finally deconvolute.py which will store the cell abundance prediction as a metadata as an anndata object (see below):
 >  adata_vis.obs[adata_vis.uns['mod']['factor_names']] = adata_vis.obsm['q05_cell_abundance_w_sf']
+- You can write this as a CSV file to explore abundances further.
 
 
 
