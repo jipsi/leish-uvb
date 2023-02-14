@@ -51,7 +51,9 @@ Many parasites of significant public health importance assume skin residency wit
 > [21] ggplot2_3.4.0       dplyr_1.0.10        cowplot_1.1.1       SeuratObject_4.1.3 
 > [25] Seurat_4.3.0 
 
-#### 3. RUNNING TIME: All R files run sequentially will take approximately 1.5 hours to run on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
+#### 4. RUNNING TIME: All R files run sequentially will take approximately 1.5 hours to run on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
+
+#### 5. Additional files required for running code available on https://zenodo.org/record/7638456
 
 ## Code to review/analyse the data and/or to replicate the figures in the manuscript 
 
