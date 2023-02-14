@@ -35,14 +35,17 @@ Linux: CentOS Linux 7 Core (For all Python scripts running cell2location)
 ## Code to replicate the figures in the manuscript (please note the following instructions)
 
 #### 1. Please maintain folder structure as per the repository
+#### 2. To see how the data is integrated please look at integrated_prepare_rds.Rmd. However the raw data will be made available upon publication but please use the Rds file link below to load the integrated data for inspection, analysis or re-creating figures in <u>'Option 2'</u> below
 
-#### Option1 : Start from scratch using raw 10x files (available post publication)
+##### Option1 : Start from scratch using raw 10x files (available post publication)
 - Download all samples/10x files from GSMXXXX into source/'sample_name'/
 - Start with integrated_prepare_rds.Rmd
 
-#### Option2 : Start from prepared Rds containing primary clustering analysis
+##### Option2 : Start from prepared Rds containing primary clustering analysis
 - Download Rds from googledrive link into your working directory
 - Start with integrated_downstream.Rmd
+
+#### 3.
 
 #### For figures relating to ligand-receptor interactions using cellchat, please start with cellchat.Rmd
 
