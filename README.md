@@ -8,8 +8,10 @@ Linux: CentOS Linux 7 Core (For all Python scripts running cell2location)
 
 ### Software 
 
+
 #### 1. R version 4.2.2
-#### 2. Packages required - see session information below
+#### 2. RStudio 2022.02.3+492 (Optional)
+#### 3. Packages required - see session information below
 
 > sessionInfo()
 > R version 4.2.2 (2022-10-31 ucrt)
@@ -34,7 +36,7 @@ Linux: CentOS Linux 7 Core (For all Python scripts running cell2location)
 
 ## Code to replicate the figures in the manuscript (please note the following instructions)
 
-#### 1. Please maintain folder structure as per the repository
+#### 1. Please maintain folder structure as per the repository for the plots/Rds files to save in the correct folders.
 #### 2. To see how the data is integrated please look at integrated_prepare_rds.Rmd. However the raw data will be made available upon publication but please use the Rds file link below to load the integrated data for inspection, analysis or re-creating figures in <u>'Option 2'</u> below
 
 ##### Option1 : Start from scratch using raw 10x files (available post publication)
@@ -42,10 +44,10 @@ Linux: CentOS Linux 7 Core (For all Python scripts running cell2location)
 - Start with integrated_prepare_rds.Rmd
 
 ##### Option2 : Start from prepared Rds containing primary clustering analysis
-- Download Rds from googledrive link into your working directory
+- Download Rds integrated_mm2108_dims15_res0.4.rds (Single cell RNA seq) from .... into your working directory
 - Start with integrated_downstream.Rmd
 
-#### 3.
+#### 3. For spatial data
 
 #### For figures relating to ligand-receptor interactions using cellchat, please start with cellchat.Rmd
 
