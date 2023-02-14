@@ -20,7 +20,7 @@ library(reshape2)
 
 #save all files and folder within your working directory or working directory/your_custom_folder_name/
 #update exp_path if you have a your_custom_folder_name within working directory 
-dir.create(paste0(getwd(), "source"))
+dir.create(paste0(getwd(), "/source"))
 exp_path <- paste0(getwd(),"/source/")
 
 output_integrated <- paste0(getwd(),"/")
