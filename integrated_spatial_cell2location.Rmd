@@ -198,25 +198,16 @@ for(group in unique(only_mm2108_skin_merged$group)){
   # Multiply scaled vales by a factor of 10
   scale01 <- function(x){(x-min(x))/(max(x)-min(x))}
   ###########################################################################
-  #Bug 1 - dataframe not transformed, change to  t() when back from review
-  #does not change interpretation
-  #will remove layout warnings
-  #vSizes <- (scale01(apply(t(cell2location_abundances), 1, mean)) + 1.0) * 10
-  vSizes <- (scale01(apply(cell2location_abundances, 1, mean)) + 1.0) * 10
+  vSizes <- (scale01(apply(t(cell2location_abundances), 1, mean)) + 1.0) * 10
 
   # Amplify or decrease the width of the edges
   edgeweights <- E(g)$weight * 2.0
   
   # Convert the graph adjacency object into a minimum spanning tree based on Prim's algorithm
   mst <- mst(g, algorithm="prim")
-  
+  #find communities
   mst.communities <- cluster_louvain(mst)
-  ###########################################################################
-  #Bug 2 - change clustering methodology: will remove igraph warnings
-  #does not change interpretation
-  #currently using edge.betweenness -> should change to using cluster_louvain()
-  #mst.communities <- cluster_louvain(mst)
-  mst.communities <- edge.betweenness.community(mst, weights=NULL, directed=FALSE)
+  #plot the graph
   mst.clustering <- make_clusters(mst, membership=mst.communities$membership)
   V(mst)$color <- mst.communities$membership + 1
   
